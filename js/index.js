@@ -1,11 +1,16 @@
 $(document).ready(async function(){
 
-    await $.ajax({    
-        type: 'GET',
-        url: 'http://localhost:5000/api/logout',
-        data:'',
-        success: async function(response) {
-            console.log(response);
+    await $.ajax({    // chequea al cargar la pagina que el usuario haya sido validado
+        type: 'POST',
+        url: '../php/borrarSession.php',
+        data: '',
+        success: function(response) {
+            if(response=='false'){  // en caso contrario vuelve a pantalla de login
+                window.location.href = '../html/index.html';
+            }
+        },
+        error: function(xhr, status, error) {
+            $('#result').html('<p>An error ocurred: ' + error + '</p>');
         }
     });
 
@@ -18,7 +23,7 @@ $(document).ready(async function(){
         await $.ajax({    
             type: 'POST',
             url: 'http://localhost:5000/api/checkCreds',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
+            contentType: 'application/json',
             data: JSON.stringify({
                 "name": nombre,
                 "password": password
@@ -29,35 +34,31 @@ $(document).ready(async function(){
             }
         });
 
-        
         if(responseA && nombre == 'admin'){
+
             await $.ajax({    
                 type: 'POST',
-                url: 'http://localhost:5000/api/setSession',
+                url: '../php/login.php',
+                data: {"nombre": nombre},
+                success: async function(response) {
+                    console.log("***",response);                   
+                }
+            });
+            await new Promise(resolve => setTimeout(resolve, 1000)); 
+            window.location.href = "admin.html";
+        }else if(responseA && !(nombre == 'admin')){ 
+            await $.ajax({    
+                type: 'POST',
+                url: '../php/login.php',
                 contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
                 data: JSON.stringify({
-                    "autoriz": responseA,
-                    "name": nombre
+                    "nombre": nombre
                 }),
                 success: async function(response) {
                     console.log("***",response);                   
                 }
             });
-            await new Promise(resolve => setTimeout(resolve, 10000)); 
-            window.location.href = "admin.html";
-        }else if(responseA && !(nombre == 'admin')){ 
-            await $.ajax({    
-                type: 'POST',
-                url: 'http://localhost:5000/api/setSession',
-                contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
-                data: JSON.stringify({
-                    "autoriz": responseA,
-                    "name": nombre
-                }),
-                success: async function(response) {
-                    console.log(response);                   
-                }
-            }); 
+            await new Promise(resolve => setTimeout(resolve, 1000)); 
             window.location.href = "client.html";                  
         }else{
             $('#nombre').val("");

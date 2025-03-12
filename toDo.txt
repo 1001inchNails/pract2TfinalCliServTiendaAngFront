@@ -1,0 +1,2 @@
+fusilar pimpamtomaLacasitos, adaptar
+empezar por nuevo producto, meter a mongo

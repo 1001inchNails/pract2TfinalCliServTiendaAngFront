@@ -1,0 +1,456 @@
+@font-face {
+    font-family: 'inter';
+    src: url('../fonts/Inter.ttf');
+    font-weight: normal;
+    font-style: normal;
+    }
+    @font-face {
+    font-family: 'futura';
+    src: url('../fonts/FuturaCondensedMedium.otf');
+    font-weight: normal;
+    font-style: normal;
+    }
+    *{
+    font-family: "futura", serif;
+    }
+    html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: scroll;
+    }
+    body{
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    }
+    #menu{
+    display: flex;
+    flex-direction: column;
+    }
+    #welcome{
+    padding-top: 20px;
+    font-weight: bolder;
+    }
+    #welcome p{
+    padding: 5px;
+    }
+    html body div.container-fluid div#menu div#welcome.container p.lead.text-center.fs-1.fs-md-3.fw-bold.text-white.shadow{
+    border-radius: 14px;
+    }
+    html body div.container-fluid div#menu div.d-flex.justify-content-evenly.mb-3.pe-3.ps-3.pt-3.pb-3 button{
+    box-shadow: 8px 8px 2px 1px rgba(21, 21, 37, 0.2);
+    font-size: larger;
+    }
+    html body div.container-fluid div.kanban-board .kanban-column div button{
+    font-size: x-large;
+    }
+    .kanban-board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    }
+    .kanban-column {
+    flex: 1;
+    min-width: 250px;
+    background-color: transparent;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    }
+    .kanban-card {
+    background-color: white;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+    }
+    .kanban-card:hover {
+    transform: translateY(-2px);
+    }
+    .kanban-card h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #555;
+    }
+    .kanban-card p {
+    font-size: 0.875rem;
+    color: #777;
+    }
+    /*Modal mensaje*/
+    #contenedorMensaje{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow-y: hidden;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 9999!important;
+    }
+    #formMensaje{
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 400px;
+    margin: 50px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 999999!important;
+    }
+    
+    #contMens{
+    border-radius: 5px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-size: 16px;
+    font-weight: bolder;
+    color: #555;
+    }
+    #mensaje{
+    font-size: 20px;
+    font-weight: bolder;
+    color: white;
+    }
+    #contMens:hover{
+    cursor: pointer;
+    background: linear-gradient(135deg, #9dadf5 0%, #886da3 100%);
+    border-radius: 5px;
+    color: white;
+    }
+    .fondo1{
+    background-color: #49a05f;
+    }
+    .fondo2{
+    background-color: rgb(110, 141, 177);
+    }
+    .fondoMenus{
+        background-color: rgb(66, 71, 77);
+        }
+        .fondoHoras{
+            background-color: rgb(116, 70, 52);
+            }
+            .fondoPedidos{
+                background-color: rgb(177, 110, 157);
+                }
+                .fondoReservas{
+                    background-color: rgb(177, 167, 110);
+                    }
+    html body div.container-fluid div.kanban-board div#contStat div.contStats div.colab p,html body div.container-fluid div.kanban-board div#contStat div.contStats div.propias p{
+    font-size: 30px;
+    }
+    .tarjeta, .tarjetaH, .tarjetaP, .tarjetaR{
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    border-radius: 10px;
+    color: white;
+    padding: 15px;
+    box-shadow: 8px 8px 2px 1px rgba(21, 21, 37, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    }
+    .tarjeta:hover,.tarjetaH:hover,.tarjetaP:hover,.tarjetaR:hover{
+    transform: scale(1.2);
+    }
+    #contIdea .contIdeas{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    }
+
+    #contTodo .contTodos{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    }
+
+    #contDoing .contDoings{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    }
+    #contDone .contDones{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    }
+ 
+    #ideaButt,#todoButt,#doingButt,#doneButt{
+    width: 100%;
+    padding: 10px;
+    border: none;
+    }
+    #ideaButt{
+        background-color: rgb(66, 71, 77);
+        }
+        #todoButt{
+            background-color: rgb(116, 70, 52);
+            }
+            #doingButt{
+                background-color: rgb(177, 110, 157);
+                }
+                #doneButt{
+                    background-color: rgb(177, 167, 110);
+                    }
+    #ideaButt:hover,#todoButt:hover,#doingButt:hover,#doneButt:hover{
+    background-color: #586dc9;
+    }
+    /* Modal tarjeta maximizada*/
+    .modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    }
+    .modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #d8bfd8;
+    padding: 20px;
+    width: 100%;
+    max-width: 600px;
+    }
+    .modal-body {
+    padding: 20px;
+    }
+    html body.modal-open div#nuevaIdea.modal.fade.show div.modal-dialog.modal-dialog-centered div.modal-content div.modal-body form#formNuevaIdea button.btn.btn-primary.w-100{
+    background-color: #667eea;
+    border: none;
+    }
+    html body.modal-open div#nuevaIdea.modal.fade.show div.modal-dialog.modal-dialog-centered div.modal-content div.modal-body form#formNuevaIdea button.btn.btn-primary.w-100:hover{
+    background-color: #97a6e9;
+    }
+    .tarjeta-detalle h4 {
+    font-size: 24px;
+    font-weight: bolder;
+    margin-bottom: 10px;
+    color: #333;
+    }
+    .tarjeta-detalle p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 8px;
+    }
+    #colaboradoresM {
+    background-color: #b69fb6;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    flex-direction: column;
+    }
+    #botoneraMax,#botoneraMaxH,#botoneraMaxP,#botoneraMaxR {
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+    }
+    #botoneraMax button, #botoneraMaxH button, #botoneraMaxP button, #botoneraMaxR button  {
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    }
+    #modifTarj:hover, #modifTarjH:hover,#modifTarjAcepH:hover,#modifTarjAcepP:hover {
+    background-color: #138496;
+    }
+    #deleteTarj:hover,#modifTarjRechP:hover {
+    background-color: #6d1f27;
+    }
+    #modifTarjRechP{
+        background-color: #dc3545;;
+    }
+    #modificacionTarjeta,#modificacionTarjetaH,#modificacionTarjetaP{
+    display: none;
+    flex-direction: column;
+    }
+    #contModifFull{
+    height: 100%;
+    max-width: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 80px;
+    }
+    html body.modal-open div#tarjetaModal.modal.fade.show div#modificacionTarjeta div.modal-dialog div#contModifFull.modal-content div.modal-header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+    html body.modal-open div#tarjetaModal.modal.fade.show div#modificacionTarjetaH div.modal-dialog div#contModifFull.modal-content div.modal-header{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        }
+        html body.modal-open div#tarjetaModal.modal.fade.show div#modificacionTarjetaP div.modal-dialog div#contModifFull.modal-content div.modal-header{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+    #fechacreacionMF,#fechaultmodMF{
+    background-color: rgb(214, 208, 208);
+    }
+    #contPapel{
+    display: none;
+    flex-direction: column;
+    }
+    #contPapel .historialMenus{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    padding: 10px;
+    }
+    #contPapel .historialPedidos{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    padding: 10px;
+    }
+    #contPapel .historialReservas{
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        padding: 10px;
+        }
+html body div.container-fluid div.kanban-board div#contPapel.kanban-column div.historialMenus .tarjetaA{
+width: 300px;
+font-size: 25px;
+font-weight: normal;
+display: flex;
+flex-direction: column;
+gap: 20px;
+padding: 10px;
+}
+html body div.container-fluid div.kanban-board div#contPapel.kanban-column div.historialPedidos .tarjetaPP{
+width: 300px;
+font-size: 25px;
+font-weight: normal;
+display: flex;
+flex-direction: column;
+gap: 20px;
+padding: 10px;
+}
+html body div.container-fluid div.kanban-board div#contPapel.kanban-column div.historialReservas .tarjetaRR{
+width: 300px;
+font-size: 25px;
+font-weight: normal;
+display: flex;
+flex-direction: column;
+gap: 20px;
+padding: 10px;
+}
+    #contStat{
+    display: none;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    }
+    #contStat .contStats{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    border-radius: 20px;
+    background-color: #d8bfd8;
+    }
+    #contStat .contStats .propias{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 80px;
+    justify-content: center;
+    align-items: center;
+    }
+    #contStat .contStats .colab{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 80px;
+    justify-content: center;
+    align-items: center;
+    }
+    #contStat .contStats .propias p,#contStat .contStats .colab p{
+    font-size: 20px;
+    }
+    @media (max-width: 600px) {
+    #contStat .contStats{
+    display: flex;
+    flex-direction: column;
+    }
+    .custom-padd {
+    padding: 0 !important;
+    }
+    }
+    #listacolaboradoresMF{
+    display: flex;
+    gap: 5px;
+    }
+    #buttmodifS{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    }
+    #modificacionTarjeta .modal-header,
+    #modificacionTarjeta .modal-body,
+    #modificacionTarjeta .modal-footer {
+    width: 50%;
+    text-align: center;
+    }
+    #modificacionTarjeta .btn {
+    width: 50%;
+    max-width: 200px;
+    }
+    html body.modal-open div#tarjetaModal.modal.fade.show div#modalMaxi.modal-dialog div.modal-content div.modal-body div.tarjeta-detalle p{
+    font-size: 25px;
+    font-weight: normal;
+    }
+
+    html body.modal-open div#tarjetaModalH.modal.fade.show div#modalMaxiH.modal-dialog div.modal-content div.modal-body div.tarjeta-detalle p{
+        font-size: 25px;
+        font-weight: normal;
+        }
+        html body.modal-open div#tarjetaModalP.modal.fade.show div#modalMaxiP.modal-dialog div.modal-content div.modal-body div.tarjeta-detalle p{
+            font-size: 25px;
+            font-weight: normal;
+            }
+        html body.modal-open div#tarjetaModalR.modal.fade.show div#modalMaxiR.modal-dialog div.modal-content div.modal-body div.tarjeta-detalle p{
+            font-size: 25px;
+            font-weight: normal;
+            }
+    #estadoproyectoMF{
+        background-color: #c1c8e7;
+    }

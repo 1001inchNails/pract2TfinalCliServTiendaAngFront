@@ -16,5 +16,4 @@ $(document).ready(async function(){
         await new Promise(resolve => setTimeout(resolve, 250)); 
             window.location.href = "index.html"; 
     }
-
 });
