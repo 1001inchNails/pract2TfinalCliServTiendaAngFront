@@ -6,6 +6,8 @@ meter sub boton a pedidos en parte user, que permita borrar los pedidos ya compl
 
 cambiar tamaño de botones y todo el css en general
 
+cambiar estructura de paginas, mostrar una, ocultar la otra o algo
+
 poner comentarios bien
 borrar console logs
 
