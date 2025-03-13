@@ -196,6 +196,18 @@
     gap: 20px;
     padding: 10px;
     }
+    #contCompr .contComprs img{
+        height: 120px;
+        width: 120px;
+    }
+    #contCompr .contComprs .textoTarjeta{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    #contCompr .contComprs .textoTarjeta p{
+        margin: 0;
+    }
  
     #prodButt,#comprButt{
     width: 100%;

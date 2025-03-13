@@ -1,2 +1,12 @@
 fusilar pimpamtomaLacasitos, adaptar
-empezar por nuevo producto, meter a mongo
+ir a admin, implementar autorizacion o rechazo de pedidos
+
+cuando admin acepte o rechaze pedidos,  mandar el pedido al historial de pedidos en parte de admin, acordarse de cambiarle el estado al pedido de user, y restablecer stock si se rechaza
+meter sub boton a pedidos en parte user, que permita borrar los pedidos ya completados y rechazados
+
+cambiar tamaño de botones y todo el css en general
+
+poner comentarios bien
+borrar console logs
+
+readme

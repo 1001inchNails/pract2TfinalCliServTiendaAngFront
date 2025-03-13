@@ -27,20 +27,19 @@
     
     <div class="kanban-board">
 
-        <div id="contIdea" class="kanban-column">
+        <div id="contProd" class="kanban-column">
             <div>
-                <button id="ideaButt" type="button" class="btn btn-primary">PRODUCTOS</button>
+                <button id="prodButt" type="button" class="btn btn-primary">PRODUCTOS</button>
             </div>
-            <div class="contIdeas"></div>
-
+            <div class="contProds"></div>
 
         </div>
 
-        <div id="contTodo" class="kanban-column">
+        <div id="contCompr" class="kanban-column">
             <div>
-                <button id="todoButt" type="button" class="btn btn-primary">COMPRAS PENDIENTES</button>
+                <button id="comprButt" type="button" class="btn btn-primary">COMPRAS PENDIENTES</button>
             </div>
-            <div class="contTodos"></div>
+            <div class="contComprs"></div>
 
         </div>
 
@@ -96,16 +95,23 @@
         <div class="modal-content">
             <div class="modal-body">
                 <div class="tarjeta-detalle">
-                    <p id="idM"></p>
-                    <p id="nombreM"></p>                    
-                    <p id="descripcionM"></p>
-                    <p id="precioM"></p>
-                    <p id="stockM"></p>
-                    <p id="rutaImagenM"></p>
-                    <div id="botoneraMax">
-                        <button id="modifTarj" type="button" class="btn btn-info">MODIFICAR</button>
-                        <button id="deleteTarj" type="button" class="btn btn-danger">ELIMINAR</button>
+                    
+                    <div class="textoMaximTarj">
+                        <p id="idM"></p>
+                        <p id="nombreM"></p>                    
+                        <p id="descripcionM"></p>
+                        <p id="precioM"></p>
+                        <p id="stockM"></p>
+                        
                     </div>
+                    <div class="imagenMaximTarj">
+                        <img id="rutaImagenM" src="" alt="">
+                        <div id="botoneraMax">
+                            <button id="modifTarj" type="button" class="btn btn-info">MODIFICAR</button>
+                            <button id="deleteTarj" type="button" class="btn btn-danger">ELIMINAR</button>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>

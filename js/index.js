@@ -18,7 +18,7 @@ $(document).ready(async function(){
         e.preventDefault();
         let nombre=$('#nombre').val();
         let password=$('#password').val();
-
+        console.log("nombre: ",nombre,"password: ",password);
         let responseA;
         await $.ajax({    
             type: 'POST',
@@ -35,30 +35,28 @@ $(document).ready(async function(){
         });
 
         if(responseA && nombre == 'admin'){
-
+            
             await $.ajax({    
                 type: 'POST',
                 url: '../php/login.php',
                 data: {"nombre": nombre},
                 success: async function(response) {
-                    console.log("***",response);                   
+                    console.log("***1",response);                   
                 }
             });
             await new Promise(resolve => setTimeout(resolve, 1000)); 
             window.location.href = "admin.html";
-        }else if(responseA && !(nombre == 'admin')){ 
+        }else if(responseA && nombre !== 'admin'){ 
+            console.log("/*/*/*/*",nombre);
             await $.ajax({    
                 type: 'POST',
                 url: '../php/login.php',
-                contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
-                data: JSON.stringify({
-                    "nombre": nombre
-                }),
+                data: {"nombre": nombre},
                 success: async function(response) {
-                    console.log("***",response);                   
+                    console.log("***2",response);                   
                 }
             });
-            await new Promise(resolve => setTimeout(resolve, 1000)); 
+            await new Promise(resolve => setTimeout(resolve, 1000));
             window.location.href = "client.html";                  
         }else{
             $('#nombre').val("");
