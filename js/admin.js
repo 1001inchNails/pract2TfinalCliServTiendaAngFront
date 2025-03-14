@@ -128,6 +128,52 @@ let idActualProyecto;
     }
 
 
+    async function cargarComprsAll() {
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/comprsall',
+            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
+            data:'',
+            success: function(response) {
+                console.log(response);
+                let contadorTarj=0;
+                response.forEach(function(obj){
+                        $(`#contCompr .contComprs`).append(`
+                            <div id="compr${contadorTarj}" class="tarjetaP">
+                            <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+                            <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+                            <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+                            <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+                            <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+                            <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+                            <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+                            <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+                            <input class="tarjuser" type="hidden" name="user" value="${obj.name}">
+                            <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+                            <div class="textoTarjeta">
+                                <p name="tarjidunica">Id: ${obj.id}</p>
+                                <p name="titulo">Descripcion: ${obj.descripcion}</p>
+                                <p name="titulo">Usuario: ${obj.name}</p>
+                            </div>
+                            
+                            </div>
+                            `);
+    
+                        $(`#compr${contadorTarj}`).addClass('fondo2');
+    
+                        contadorTarj++;
+                    
+                    
+                });
+                contadorTarj=0;
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('<p>Error: ' + error + '</p>');
+            }
+        });
+    }
+
+
     $(document).on('click', '.tarjeta', function() { // para mostrar las tarjetas maximizadas (menus)
         $('#botoneraMax').css('display','flex');
         let tarjeta=$(this);    
@@ -255,6 +301,39 @@ $('#deleteTarj').on('click', async function(){  // borrado de tarjeta (producto)
         }
     });
 });
+
+
+$(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas maximizadas (menus)
+    $('#botoneraMaxP').css('display','flex');
+    let tarjetaP=$(this);
+    let datosTarjeta={
+        tarjuser: tarjetaP.find('.tarjuser').attr('value'),
+        tarjidunica: tarjetaP.find('.tarjidunica').attr('value'),
+        tarjidunicaProducto: tarjetaP.find('.tarjidunicaProducto').attr('value'),
+        tarjproducto: tarjetaP.find('.tarjproducto').attr('value'),
+        tarjdescripcion: tarjetaP.find('.tarjdescripcion').attr('value'),
+        tarjprecio: tarjetaP.find('.tarjprecio').attr('value'),
+        tarjstock: tarjetaP.find('.tarjstock').attr('value'),
+        tarjrutaImagen: tarjetaP.find('.tarjrutaImagen').attr('value'),
+        tarjestado: tarjetaP.find('.tarjestado').attr('value')
+    };
+    console.log(datosTarjeta);  
+    let totalP = Number(datosTarjeta.tarjprecio) * Number(datosTarjeta.tarjstock);
+    $('#rutaImagenPP').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
+    $('#rutaImagenPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
+    $('#userP').text('Usuario: ' + datosTarjeta.tarjuser);
+    $('#idPedidoP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
+    $('#idProductoP').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
+    $('#productoP').text('Producto: ' + datosTarjeta.tarjproducto);
+    $('#descripcionP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
+    $('#precioP').text('Precio: ' + datosTarjeta.tarjprecio);
+    $('#stockP').text('Cantidad: ' + datosTarjeta.tarjstock);
+    $('#estadoP').text('Estado: ' + datosTarjeta.tarjestado);
+    $('#totalP').text('Total: ' + totalP);
+
+    
+    $('#tarjetaModalP').modal('show');
+});
     
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,6 +354,17 @@ $('#deleteTarj').on('click', async function(){  // borrado de tarjeta (producto)
                 setTimeout(function() { // necesario en firefox
                     window.location.href = url;      
                 }, 1000);
+    });
+
+    $('#comprButt').on('click',async function(){ // funcionalidad toggle para boton de mostrar productos
+        if(estadoBotonComprs){
+            borrarContenedor("Compr");
+            estadoBotonComprs=false;
+        }else{
+            cargarComprsAll();
+            estadoBotonComprs=true;
+        }
+        
     });
 
 });
