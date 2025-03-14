@@ -1,8 +1,19 @@
 fusilar pimpamtomaLacasitos, adaptar
-ir a admin, implementar autorizacion o rechazo de pedidos (admin html, 193; admin js, 369)
 
-cuando admin acepte o rechaze pedidos,  mandar el pedido al historial de pedidos en parte de admin, acordarse de cambiarle el estado al pedido de user, y restablecer stock si se rechaza
+cuando admin acepte o rechaze pedidos,  mandar el pedido al historial de pedidos en parte de admin, acordarse de cambiarle el estado al pedido de user, y restablecer 
+stock si se rechaza CHECJEAR
+
 meter sub boton a pedidos en parte user, que permita borrar los pedidos ya completados y rechazados
+
+
+meter boton de cancelar pedido para user
+
+cambiar altura de botones en menu maximizado de mostrar pedidos pendientes en admin
+
+mostrar historiales
+
+
+
 
 
 meter mensaje de vacio si no hay elementos al cargar

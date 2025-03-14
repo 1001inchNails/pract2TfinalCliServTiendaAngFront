@@ -222,6 +222,7 @@ let maxStock = 0;
         $('#stockMF').val(1);
         $('#stockMF').attr('max',`${tarjetaActual[0].tarjstock}`);
         $('#stockMF').attr('min','1');
+        $('#userMF').val(micCheck);
         
     });
 

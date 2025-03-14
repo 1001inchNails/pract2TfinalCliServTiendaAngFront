@@ -24,8 +24,10 @@ let estadoBotonAll=false;
 let tarjetaActual;  // guardar datos de tarjeta actual para usar en el formulario de modificacion
 let idActualProyecto;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+let userIdNombreParaBusqueda;
+let pedidoIdParaBusqueda;
+let stockPendiente;
+let idPedidoPPP;
 
 
 
@@ -317,21 +319,22 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
         tarjrutaImagen: tarjetaP.find('.tarjrutaImagen').attr('value'),
         tarjestado: tarjetaP.find('.tarjestado').attr('value')
     };
-    console.log(datosTarjeta);  
     let totalP = Number(datosTarjeta.tarjprecio) * Number(datosTarjeta.tarjstock);
-    $('#rutaImagenPP').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
-    $('#rutaImagenPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
-    $('#userP').text('Usuario: ' + datosTarjeta.tarjuser);
-    $('#idPedidoP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
-    $('#idProductoP').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
-    $('#productoP').text('Producto: ' + datosTarjeta.tarjproducto);
-    $('#descripcionP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
-    $('#precioP').text('Precio: ' + datosTarjeta.tarjprecio);
-    $('#stockP').text('Cantidad: ' + datosTarjeta.tarjstock);
-    $('#estadoP').text('Estado: ' + datosTarjeta.tarjestado);
-    $('#totalP').text('Total: ' + totalP);
-
-    
+    $('#rutaImagenPPP').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
+    $('#rutaImagenPPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
+    $('#userPPP').text('Usuario: ' + datosTarjeta.tarjuser);
+    $('#idPedidoPPP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
+    $('#idProductoPPP').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
+    idPedidoPPP = datosTarjeta.tarjidunicaProducto;
+    $('#productoPPP').text('Producto: ' + datosTarjeta.tarjproducto);
+    $('#descripcionPPP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
+    $('#precioPPP').text('Precio: ' + datosTarjeta.tarjprecio);
+    $('#stockPPP').text('Cantidad: ' + datosTarjeta.tarjstock);
+    stockPendiente = Number(datosTarjeta.tarjstock);
+    $('#estadoPPP').text('Estado: ' + datosTarjeta.tarjestado);
+    $('#totalPPP').text('Total: ' + totalP);
+    userIdNombreParaBusqueda = datosTarjeta.tarjuser;
+    pedidoIdParaBusqueda = datosTarjeta.tarjidunica;
     $('#tarjetaModalP').modal('show');
 });
     
@@ -367,4 +370,154 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
         
     });
 
+    $('#modifTarjAcepP').on('click',async function(){
+        console.log(userIdNombreParaBusqueda,pedidoIdParaBusqueda);
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/cambiarEstado',
+            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
+            data: JSON.stringify({
+                "estado":"completado",
+                "username":userIdNombreParaBusqueda,
+                "idkey": "idPedido",
+                "idvalue": pedidoIdParaBusqueda,
+                "coleccOrigen": "creds"
+            }),
+            success: function(response) {
+                console.log(response);
+                if(response.mensaje=="Estado cambiado correctamente"){
+                    console.log("Producto trasladado");
+                }else{
+                    console.log("Fallo al trasladar producto");
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+        });
+
+        
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/copiarDocumento',
+            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
+            data: JSON.stringify({
+                "username":userIdNombreParaBusqueda,
+                "idkey": "idPedido",
+                "idvalue": pedidoIdParaBusqueda,
+                "coleccOrigen": "creds",
+                "coleccDestino": "pedidosHistorial"
+            }),
+            success: function(response) {
+                console.log(response);
+                $('#tarjetaModalP').modal('hide');
+                borrarContenedor("Prod");
+                borrarContenedor("Compr");
+                estadoBotonProds=false;
+                estadoBotonComprs=false; 
+                if(response.mensaje=="Documento copiado correctamente"){
+                    mensaje("Producto trasladado");
+                }else{
+                    mensaje("Fallo al trasladar producto");
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+        });
+        
+    });
+
+
+    $('#modifTarjRechP').on('click',async function(){
+        console.log(userIdNombreParaBusqueda,pedidoIdParaBusqueda);
+        let idProducto = idPedidoPPP;
+        console.log("patata",idProducto);
+
+
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/devolverStock',
+            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
+            data: JSON.stringify({
+                "idProducto":idProducto,
+                "extrastock":stockPendiente
+            }),
+            success: function(response) {
+                console.log(response);
+                if(response.mensaje=="Update correcto"){
+                    console.log("Producto trasladado");
+                }else{
+                    console.log("Fallo al trasladar producto");
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+        });
+
+
+
+
+
+
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/cambiarEstado',
+            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
+            data: JSON.stringify({
+                "estado":"rechazado",
+                "username":userIdNombreParaBusqueda,
+                "idkey": "idPedido",
+                "idvalue": pedidoIdParaBusqueda,
+                "coleccOrigen": "creds"
+            }),
+            success: function(response) {
+                console.log(response);
+                if(response.mensaje=="Estado cambiado correctamente"){
+                    console.log("Producto trasladado");
+                }else{
+                    console.log("Fallo al trasladar producto");
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+        });
+
+        
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/copiarDocumento',
+            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
+            data: JSON.stringify({
+                "username":userIdNombreParaBusqueda,
+                "idkey": "idPedido",
+                "idvalue": pedidoIdParaBusqueda,
+                "coleccOrigen": "creds",
+                "coleccDestino": "pedidosHistorial"
+            }),
+            success: function(response) {
+                console.log(response);
+                $('#tarjetaModalP').modal('hide');
+                borrarContenedor("Prod");
+                borrarContenedor("Compr");
+                estadoBotonProds=false;
+                estadoBotonComprs=false; 
+                if(response.mensaje=="Documento copiado correctamente"){
+                    mensaje("Producto trasladado");
+                }else{
+                    mensaje("Fallo al trasladar producto");
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+        });
+
+
+
+
+        
+    });
 });
