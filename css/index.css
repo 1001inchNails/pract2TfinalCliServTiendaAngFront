@@ -1,0 +1,159 @@
+@font-face {
+    font-family: 'bb';
+    src: url('../fonts/HeartBreakingBad.otf');
+    font-weight: normal;
+    font-style: normal;
+    }
+    @font-face {
+        font-family: 'futura';
+        src: url('../fonts/FuturaCondensedMedium.otf');
+        font-weight: normal;
+        font-style: normal;
+        }
+    *{
+        font-family: 'futura';
+        font-size: large;
+        overflow: hidden;
+        color: white;
+    }
+/* Ensure the container takes the full height of the viewport */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+body{
+    background-color: #000;
+    background-image: url('../img/hank4.jpg');
+    background-size: auto;
+    background-position: center;
+    background-repeat: no-repeat; 
+    }
+/* Position the login form container */
+#cont {
+    position: fixed; /* Fixed positioning to keep it in place */
+    bottom: 40px; /* Margin from the bottom */
+    right: 40px; /* Margin from the right */
+    width: auto; /* Adjust width as needed */
+    margin: 0; /* Remove any default margin */
+    background-color: transparent;
+}
+#titulo{
+    color: white!important;
+}
+/* Make the login form bigger by default */
+.card {
+    background-color: transparent;
+    width: 500px; /* Increase the width of the form */
+    padding: 20px; /* Add padding inside the card */
+    border: none;
+}
+
+.card-title {
+    background-color: transparent;
+    font-size: 2rem; /* Increase the title font size */
+    margin-bottom: 20px; /* Add space below the title */
+}
+
+.form-label {
+    background-color: transparent;
+    font-size: 1.2rem; /* Increase label font size */
+    color: white;
+}
+
+.form-control {
+    background-color: transparent;
+    font-size: 1.1rem; /* Increase input font size */
+    padding: 10px; /* Add padding to inputs */
+}
+
+.btn {
+    font-size: 1.2rem; /* Increase button font size */
+    padding: 10px; /* Add padding to the button */
+}
+
+/* Media queries to make the form smaller on smaller screens */
+@media (max-width: 1200px) {
+    .card {
+        width: 450px; /* Slightly smaller width */
+    }
+    .card-title {
+        font-size: 1.8rem;
+    }
+    .form-label, .form-control, .btn {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .card {
+        width: 400px; /* Smaller width */
+    }
+    .card-title {
+        font-size: 1.6rem;
+    }
+    .form-label, .form-control, .btn {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .card {
+        width: 350px; /* Even smaller width */
+    }
+    .card-title {
+        font-size: 1.4rem;
+    }
+    .form-label, .form-control, .btn {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card {
+        width: 300px; /* Smallest width for mobile devices */
+    }
+    .card-title {
+        font-size: 1.2rem;
+    }
+    .form-label, .form-control, .btn {
+        font-size: 0.7rem;
+    }
+    #cont {
+        bottom: 0; /* Margin from the bottom */
+        right: 0; /* Margin from the right */
+
+    }
+}
+h1 {
+    font-family: 'bb';
+    font-size: 100px;
+    text-align: center; /* Center text horizontally */
+    margin: 0; /* Remove default margin */
+    display: flex;
+    align-items: center; /* Center text vertically */
+    justify-content: center; /* Center text horizontally */
+  }
+  /* Responsive adjustments */
+  @media (max-width: 1200px) {
+    h1 {
+      font-size: 80px;
+    }
+  }
+  
+  @media (max-width: 992px) {
+    h1 {
+      font-size: 60px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 40px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    h1 {
+      font-size: 30px;
+    }
+  }

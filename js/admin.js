@@ -16,10 +16,8 @@ $(document).ready(async function(){
 // estados para los toggles
 let estadoBotonProds=false;
 let estadoBotonComprs=false;
-
 let estadoBotonPapelera=false;
-let estadoBotonStats=false;
-let estadoBotonAll=false;
+
 
 let tarjetaActual;  // guardar datos de tarjeta actual para usar en el formulario de modificacion
 let idActualProyecto;
@@ -42,16 +40,12 @@ let idPedidoPPP;
         $(`#cont${tipo} .cont${tipo}s`).empty();
     }
 
-    function mensaje(texto){     // funcion mensaje aviso
-        $('#contenedorMensaje').fadeIn();
-        $('#mensaje').text(texto);        
-    }
 
     function resetInputsNuevoProducto() {   //  resetea inputs de nuevo producto cuando se meten datos erroneos
     $('#nuevoProducto').find('input[type="text"], input[type="hidden"], input[type="number"]').val('');
 }
 
-    $('#nuevoProducto').submit(function(e) {    // envio de nuevo menu a bbdd
+    $('#nuevoProducto').submit(function(e) {    // envio de nuevo producto a bbdd
         let producto = $('#nombreP').val();
         let descripcion = $('#descripcionP').val();
         let precio = $('#precioP').val();
@@ -78,9 +72,12 @@ let idPedidoPPP;
                 resetInputsNuevoProducto();
                 borrarContenedor("Prod");
                 borrarContenedor("Compr");
+                borrarContenedor("Papel");
                 estadoBotonProds=false;
                 estadoBotonComprs=false;  
-                mensaje("Nuevo producto creado");
+                estadoBotonPapelera=false;
+                cargarProds('prods','Prod');
+                estadoBotonProds=true;
   
             },
             error: function(xhr, status, error) {
@@ -91,16 +88,25 @@ let idPedidoPPP;
 
 
 
-    async function cargarProds() {
+    async function cargarProds(endpoint,prefijoContenedor) {
         await $.ajax({    
             type: 'GET',
-            url: 'http://localhost:5000/api/prods',
+            url: `http://localhost:5000/api/${endpoint}`,
             data: '',
             success: function(response) {
                 console.log(response);
-                let contadorTarj=0;
+                if(response.length==0){
+                    $(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
+                        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                            <p style="font-size: 3rem; margin: 0; color: white;">
+                                No hay datos.
+                            </p>
+                        </div>
+                        `);
+                }else{
+                    let contadorTarj=0;
                 response.forEach(function(obj){
-                    $(`#contProd .contProds`).append(`
+                    $(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
                         <div id="prod${contadorTarj}" class="tarjeta">
                         <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.id}">
                         <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
@@ -122,6 +128,8 @@ let idPedidoPPP;
                     contadorTarj++;
                 });
                 contadorTarj=0;
+                }
+                
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>Error: ' + error + '</p>');
@@ -138,7 +146,16 @@ let idPedidoPPP;
             data:'',
             success: function(response) {
                 console.log(response);
-                let contadorTarj=0;
+                if(response.length==0){
+                    $(`#contCompr .contComprs`).append(`
+                        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                            <p style="font-size: 3rem; margin: 0; color: white;">
+                                No hay datos.
+                            </p>
+                        </div>
+                        `);
+                }else{
+                    let contadorTarj=0;
                 response.forEach(function(obj){
                         $(`#contCompr .contComprs`).append(`
                             <div id="compr${contadorTarj}" class="tarjetaP">
@@ -168,6 +185,8 @@ let idPedidoPPP;
                     
                 });
                 contadorTarj=0;
+                }
+                
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>Error: ' + error + '</p>');
@@ -178,6 +197,9 @@ let idPedidoPPP;
 
     $(document).on('click', '.tarjeta', function() { // para mostrar las tarjetas maximizadas (menus)
         $('#botoneraMax').css('display','flex');
+        if(estadoBotonPapelera){
+            $('#botoneraMax').css('display','none');
+        }
         let tarjeta=$(this);    
         let datosTarjeta={
             tarjidunica: tarjeta.find('.tarjidunica').attr('value'),
@@ -266,10 +288,12 @@ let idPedidoPPP;
 
         borrarContenedor("Prod");
         borrarContenedor("Compr");
+        borrarContenedor("Papel");
         estadoBotonProds=false;
         estadoBotonComprs=false;  
-        
-        mensaje("Producto modificado");
+        estadoBotonPapelera=false;
+        cargarProds('prods','Prod');
+        estadoBotonProds=true;
     });
 
 
@@ -289,14 +313,14 @@ $('#deleteTarj').on('click', async function(){  // borrado de tarjeta (producto)
             console.log(response);
             $('#tarjetaModal').modal('hide');
             borrarContenedor("Prod");
-            borrarContenedor("Compr");
-            estadoBotonProds=false;
-            estadoBotonComprs=false; 
-            if(response.mensaje=="Documento trasladado correctamente"){
-                mensaje("Producto eliminado");
-            }else{
-                mensaje("Fallo al eliminar producto");
-            }
+                borrarContenedor("Compr");
+                borrarContenedor("Papel");
+                estadoBotonProds=false;
+                estadoBotonComprs=false;  
+                estadoBotonPapelera=false;
+                cargarProds('prods','Prod');
+                estadoBotonProds=true;
+
         },
         error: function(xhr, status, error) {
             $('#result').html('<p>An error ocurred: ' + error + '</p>');
@@ -341,14 +365,24 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     $('#prodButt').on('click',async function(){ // funcionalidad toggle para boton de mostrar productos
+        $('#aviso').css('visibility','visible');
+        $('#aviso p').text('Productos');
+        $('#contPapel').css('display','none');
+        $('#contProd').css('display','flex');
+        $('#contCompr').css('display','none');
+        estadoBotonComprs=false;
+        estadoBotonPapelera=false;
+        borrarContenedor("Prod");
+        borrarContenedor("Compr");
+        borrarContenedor("Papel");
         if(estadoBotonProds){
             borrarContenedor("Prod");
             estadoBotonProds=false;
         }else{
-            cargarProds();
+            borrarContenedor("Prod");
+            cargarProds('prods','Prod');
             estadoBotonProds=true;
         }
-        
     });
 
 
@@ -360,14 +394,46 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
     });
 
     $('#comprButt').on('click',async function(){ // funcionalidad toggle para boton de mostrar productos
+        $('#aviso').css('visibility','visible');
+        $('#aviso p').text('Compras pendientes');
+        $('#contPapel').css('display','none');
+        $('#contProd').css('display','none');
+        $('#contCompr').css('display','flex');
+        estadoBotonProds=false;
+        estadoBotonPapelera=false;
+        borrarContenedor("Prod");
+        borrarContenedor("Compr");
+        borrarContenedor("Papel");
         if(estadoBotonComprs){
             borrarContenedor("Compr");
+            
             estadoBotonComprs=false;
         }else{
+            borrarContenedor("Compr");
             cargarComprsAll();
             estadoBotonComprs=true;
         }
-        
+    });
+
+    $('#verDeleted').on('click',async function(){
+        $('#aviso').css('visibility','visible');
+        $('#aviso p').text('Historial de pedidos');
+        $('#contPapel').css('display','flex');
+        $('#contProd').css('display','none');
+        $('#contCompr').css('display','none');
+        estadoBotonProds=false;
+        estadoBotonComprs=false;
+        borrarContenedor("Prod");
+        borrarContenedor("Compr");
+        borrarContenedor("Papel");
+        if(estadoBotonPapelera){
+            borrarContenedor("Papel");
+            estadoBotonPapelera=false;
+        }else{
+            borrarContenedor("Papel");
+            cargarProds('hist','Papel');
+            estadoBotonPapelera=true;
+        }
     });
 
     $('#modifTarjAcepP').on('click',async function(){
@@ -385,11 +451,6 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
             }),
             success: function(response) {
                 console.log(response);
-                if(response.mensaje=="Estado cambiado correctamente"){
-                    console.log("Producto trasladado");
-                }else{
-                    console.log("Fallo al trasladar producto");
-                }
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>An error ocurred: ' + error + '</p>');
@@ -411,15 +472,13 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
             success: function(response) {
                 console.log(response);
                 $('#tarjetaModalP').modal('hide');
+                estadoBotonProds=false;
+                estadoBotonPapelera=false;
                 borrarContenedor("Prod");
                 borrarContenedor("Compr");
-                estadoBotonProds=false;
-                estadoBotonComprs=false; 
-                if(response.mensaje=="Documento copiado correctamente"){
-                    mensaje("Producto trasladado");
-                }else{
-                    mensaje("Fallo al trasladar producto");
-                }
+                borrarContenedor("Papel");
+                cargarComprsAll();
+                estadoBotonComprs=true;
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>An error ocurred: ' + error + '</p>');
@@ -432,8 +491,6 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
     $('#modifTarjRechP').on('click',async function(){
         console.log(userIdNombreParaBusqueda,pedidoIdParaBusqueda);
         let idProducto = idPedidoPPP;
-        console.log("patata",idProducto);
-
 
         await $.ajax({    
             type: 'POST',
@@ -445,20 +502,11 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
             }),
             success: function(response) {
                 console.log(response);
-                if(response.mensaje=="Update correcto"){
-                    console.log("Producto trasladado");
-                }else{
-                    console.log("Fallo al trasladar producto");
-                }
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>An error ocurred: ' + error + '</p>');
             }
         });
-
-
-
-
 
 
         await $.ajax({    
@@ -474,11 +522,6 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
             }),
             success: function(response) {
                 console.log(response);
-                if(response.mensaje=="Estado cambiado correctamente"){
-                    console.log("Producto trasladado");
-                }else{
-                    console.log("Fallo al trasladar producto");
-                }
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>An error ocurred: ' + error + '</p>');
@@ -500,24 +543,21 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
             success: function(response) {
                 console.log(response);
                 $('#tarjetaModalP').modal('hide');
+                estadoBotonProds=false;
+                estadoBotonPapelera=false;
                 borrarContenedor("Prod");
                 borrarContenedor("Compr");
-                estadoBotonProds=false;
-                estadoBotonComprs=false; 
-                if(response.mensaje=="Documento copiado correctamente"){
-                    mensaje("Producto trasladado");
-                }else{
-                    mensaje("Fallo al trasladar producto");
-                }
+                borrarContenedor("Papel");
+                cargarComprsAll();
+                estadoBotonComprs=true;
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>An error ocurred: ' + error + '</p>');
             }
         });
 
-
-
-
         
     });
+
+    
 });

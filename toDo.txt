@@ -1,28 +1,18 @@
-fusilar pimpamtomaLacasitos, adaptar
 
-cuando admin acepte o rechaze pedidos,  mandar el pedido al historial de pedidos en parte de admin, acordarse de cambiarle el estado al pedido de user, y restablecer 
-stock si se rechaza CHECJEAR
-
-meter sub boton a pedidos en parte user, que permita borrar los pedidos ya completados y rechazados
-
-
-meter boton de cancelar pedido para user
-
-cambiar altura de botones en menu maximizado de mostrar pedidos pendientes en admin
-
-mostrar historiales
-
-
-
-
-
-meter mensaje de vacio si no hay elementos al cargar
+buscar fotos de minerales, hacer productos
 
 cambiar tamaño de botones y todo el css en general
 
-cambiar estructura de paginas, mostrar una, ocultar la otra o algo
+cambiar estructura de paginas
+
+
+quitar barra scroll en chrome / edge
+
+cambiar titulos de paginas
+cambiar fondos...?
 
 poner comentarios bien
 borrar console logs
+
 
 readme

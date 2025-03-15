@@ -18,21 +18,12 @@ $(document).ready(async function(){
 let estadoBotonProds=false;
 let estadoBotonComprs=false;
 
-let estadoBotonPapelera=false;
-let estadoBotonStats=false;
-let estadoBotonAll=false;
-
 let tarjetaActual;  // guardar datos de tarjeta actual para usar en el formulario de modificacion
-let idActualProyecto;
-
 
 let maxStock = 0;
+let currentEstado;
+let pedidoIdParaBusqueda;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 
     if(micCheck == false){
         await new Promise(resolve => setTimeout(resolve, 250)); 
@@ -44,55 +35,6 @@ let maxStock = 0;
         $(`#cont${tipo} .cont${tipo}s`).empty();
     }
 
-    function mensaje(texto){     // funcion mensaje aviso
-        $('#contenedorMensaje').fadeIn();
-        $('#mensaje').text(texto);        
-    }
-
-    function resetInputsNuevoProducto() {   //  resetea inputs de nuevo producto cuando se meten datos erroneos
-    $('#nuevoProducto').find('input[type="text"], input[type="hidden"], input[type="number"]').val('');
-}
-
-    $('#nuevoProducto').submit(function(e) {    // envio de nuevo menu a bbdd
-        let producto = $('#nombreP').val();
-        let descripcion = $('#descripcionP').val();
-        let precio = $('#precioP').val();
-        let stock = $('#stockP').val();
-        stock = Number(stock);
-        let rutaImagen = $('#rutaImagenP').val();
-        console.log(producto,descripcion,precio,stock,rutaImagen);
-        e.preventDefault();
-        $.ajax({
-            type: 'POST',
-            url: 'http://localhost:5000/api/nuevoProducto',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
-            data: JSON.stringify({
-                "producto": producto,
-                "descripcion": descripcion,
-                "precio": precio,
-                "stock": stock,
-                "rutaImagen": rutaImagen
-            }),
-            success: function(response) {
-                console.log(response);                
-
-                $('#nuevoProducto').modal('hide');
-                resetInputsNuevoProducto();
-                borrarContenedor("Prod");
-                borrarContenedor("Compr");
-                estadoBotonProds=false;
-                estadoBotonComprs=false;  
-                mensaje("Nuevo producto creado");
-  
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-        });
-    });
-
-
-
     async function cargarProds() {
         await $.ajax({    
             type: 'GET',
@@ -100,7 +42,16 @@ let maxStock = 0;
             data: '',
             success: function(response) {
                 console.log(response);
-                let contadorTarj=0;
+                if(response.length==0){
+                    $(`#contProd .contProds`).append(`
+                        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                            <p style="font-size: 3rem; margin: 0; color: white;">
+                                No hay datos.
+                            </p>
+                        </div>
+                        `);
+                }else{
+                    let contadorTarj=0;
                 response.forEach(function(obj){
                     if(obj.stock>0){
                         $(`#contProd .contProds`).append(`
@@ -127,6 +78,8 @@ let maxStock = 0;
                     
                 });
                 contadorTarj=0;
+                }
+                
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>Error: ' + error + '</p>');
@@ -144,7 +97,16 @@ let maxStock = 0;
             }),
             success: function(response) {
                 console.log(response);
-                let contadorTarj=0;
+                if(response.length==0){
+                    $(`#contCompr .contComprs`).append(`
+                        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                            <p style="font-size: 3rem; margin: 0; color: white;">
+                                No hay datos.
+                            </p>
+                        </div>
+                        `);
+                }else{
+                    let contadorTarj=0;
                 response.forEach(function(obj){
                         $(`#contCompr .contComprs`).append(`
                             <div id="compr${contadorTarj}" class="tarjetaP">
@@ -173,6 +135,8 @@ let maxStock = 0;
                     
                 });
                 contadorTarj=0;
+                }
+                
             },
             error: function(xhr, status, error) {
                 $('#result').html('<p>Error: ' + error + '</p>');
@@ -298,47 +262,16 @@ let maxStock = 0;
         borrarContenedor("Compr");
         estadoBotonProds=false;
         estadoBotonComprs=false;  
-
+        cargarProds();
+        estadoBotonProds=true;
 
         maxStock = 0;
-        mensaje("Pedido realizado");
 
     });
 
-
-//{"idkey":"nombreCampoId","idvalue":"valorDeId","coleccOrigen":"nombreColeccOriginal","coleccDestino":"nombreColeccDestino"}
-$('#deleteTarj').on('click', async function(){  // borrado de tarjeta (producto)
-    await $.ajax({    
-        type: 'POST',
-        url: 'http://localhost:5000/api/moverDocumento',
-        contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
-        data: JSON.stringify({
-            "idkey": "id",
-            "idvalue": idActualProyecto,
-            "coleccOrigen": "productos",
-            "coleccDestino": "productosHistorial"
-        }),
-        success: function(response) {
-            console.log(response);
-            $('#tarjetaModal').modal('hide');
-            borrarContenedor("Prod");
-            borrarContenedor("Compr");
-            estadoBotonProds=false;
-            estadoBotonComprs=false; 
-            if(response.mensaje=="Documento trasladado correctamente"){
-                mensaje("Producto eliminado");
-            }else{
-                mensaje("Fallo al eliminar producto");
-            }
-        },
-        error: function(xhr, status, error) {
-            $('#result').html('<p>An error ocurred: ' + error + '</p>');
-        }
-    });
-});
-    
 
 $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas maximizadas (productos)
+    $('#botoneraMaxP').css('display','flex');
     let tarjetaP=$(this);
     let datosTarjeta={
         tarjidunica: tarjetaP.find('.tarjidunica').attr('value'),
@@ -350,16 +283,20 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
         tarjrutaImagen: tarjetaP.find('.tarjrutaImagen').attr('value'),
         tarjestado: tarjetaP.find('.tarjestado').attr('value')
     };
+    currentEstado = datosTarjeta.tarjestado;
+    pedidoIdParaBusqueda = datosTarjeta.tarjidunica;
     console.log(datosTarjeta);  
     let totalP = Number(datosTarjeta.tarjprecio) * Number(datosTarjeta.tarjstock);
     $('#rutaImagenPP').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
     $('#rutaImagenPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
     $('#idPedidoP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
     $('#idProductoP').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
+    idPedidoPPP = datosTarjeta.tarjidunicaProducto;
     $('#productoP').text('Producto: ' + datosTarjeta.tarjproducto);
     $('#descripcionP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
     $('#precioP').text('Precio: ' + datosTarjeta.tarjprecio);
     $('#stockP').text('Cantidad: ' + datosTarjeta.tarjstock);
+    stockPendiente = Number(datosTarjeta.tarjstock);
     $('#estadoP').text('Estado: ' + datosTarjeta.tarjestado);
     $('#totalP').text('Total: ' + totalP);
 
@@ -367,26 +304,120 @@ $(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas m
     $('#tarjetaModalP').modal('show');
 });
 
+$(document).on('click', '#modifTarjEliminar', async function() { // para eliminar/cancelar pedidos
+    $('#tarjetaModalP').modal('hide');
+    let copiarObjeto;
+    let idProducto = idPedidoPPP;
+    if(currentEstado == "pendiente"){
+        console.log("cancelado");
+        copiarObjeto = true;
+
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/devolverStock',
+            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
+            data: JSON.stringify({
+                "idProducto":idProducto,
+                "extrastock":stockPendiente
+            }),
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+        });
+
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/cambiarEstado',
+            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
+            data: JSON.stringify({
+                "estado":"cancelado",
+                "username":micCheck,
+                "idkey": "idPedido",
+                "idvalue": pedidoIdParaBusqueda,
+                "coleccOrigen": "creds"
+            }),
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+        });
+
+    }else{
+        console.log("eliminar");
+        copiarObjeto = false;
+    }
+    await $.ajax({    
+        type: 'POST',
+        url: 'http://localhost:5000/api/cancelareliminar',
+        contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
+        data: JSON.stringify({
+            "username":micCheck,
+            "idkey": "idPedido",
+            "idvalue": pedidoIdParaBusqueda,
+            "coleccOrigen": "creds",
+            "coleccDestino": "pedidosHistorial",
+            "copiar":copiarObjeto
+        }),
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(xhr, status, error) {
+            $('#result').html('<p>An error ocurred: ' + error + '</p>');
+        }
+    });
+
+    borrarContenedor("Prod");
+    borrarContenedor("Compr");
+    estadoBotonProds=false;
+    estadoBotonComprs=false;
+    cargarComprs(micCheck);
+    estadoBotonComprs=true;
+
+});
+
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     $('#prodButt').on('click',async function(){ // funcionalidad toggle para boton de mostrar productos
+        $('#aviso').css('visibility','visible');
+        $('#aviso p').text('Productos');
+        $('#contProd').css('display','flex');
+        $('#contCompr').css('display','none');
+        estadoBotonComprs=false;
+        estadoBotonPapelera=false;
+        borrarContenedor("Prod");
+        borrarContenedor("Compr");
         if(estadoBotonProds){
             borrarContenedor("Prod");
             estadoBotonProds=false;
         }else{
+            borrarContenedor("Prod");
             cargarProds();
             estadoBotonProds=true;
         }
-        
     });
 
 
-    $('#comprButt').on('click',async function(){ // funcionalidad toggle para boton de mostrar productos
+    $('#comprButt').on('click',async function(){ // funcionalidad toggle para boton de mostrar compras
+        $('#aviso').css('visibility','visible');
+        $('#aviso p').text('Compras');
+        $('#contProd').css('display','none');
+        $('#contCompr').css('display','flex');
+        estadoBotonProds=false;
+        estadoBotonPapelera=false;
+        borrarContenedor("Prod");
+        borrarContenedor("Compr");
         if(estadoBotonComprs){
             borrarContenedor("Compr");
+            
             estadoBotonComprs=false;
         }else{
+            borrarContenedor("Compr");
             cargarComprs(micCheck);
             estadoBotonComprs=true;
         }

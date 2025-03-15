@@ -17,7 +17,7 @@
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: scroll;
+    overflow: auto;
     }
     body{
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -31,12 +31,46 @@
     display: flex;
     flex-direction: column;
     }
-    #welcome{
-    padding-top: 20px;
-    font-weight: bolder;
+    .welcome {
+        position: relative;
+        margin-top: 10px;
+        width: 100%; 
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.2); /* Use rgba for background color with opacity */
+        border-radius: 15px;
     }
-    #welcome p{
-    padding: 5px;
+    .welcome1 {
+        position: relative;
+        margin-top: 10px;
+        width: 100%; 
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        border-radius: 15px;
+    }
+    .welcome p {
+        position: relative;
+        font-size: 2rem;
+        margin: 0;
+        color: white;
+        z-index: 1;
+    }
+    .welcome1 p {
+        position: relative;
+        font-size: 2rem;
+        margin: 0;
+        color: black;
+        z-index: 1;
+    }
+    #aviso{
+        visibility: hidden;
+        margin: 0;
     }
     html body div.container-fluid div#menu div#welcome.container p.lead.text-center.fs-1.fs-md-3.fw-bold.text-white.shadow{
     border-radius: 14px;
@@ -169,11 +203,12 @@
     gap: 10px;
     }
     .tarjeta:hover,.tarjetaH:hover,.tarjetaP:hover,.tarjetaR:hover{
-    transform: scale(1.2);
+        background-color: rgb(21, 132, 184);
     }
     #contProd .contProds{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    flex-wrap: wrap;
     gap: 20px;
     padding: 10px;
     }
@@ -193,6 +228,7 @@
     #contCompr .contComprs{
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     gap: 20px;
     padding: 10px;
     }
@@ -208,9 +244,11 @@
     #contCompr .contComprs .textoTarjeta p{
         margin: 0;
     }
- 
-    #prodButt,#comprButt{
-    width: 100%;
+
+    
+    
+    #prodButt,#comprButt,#cerrarSesion{
+    width: 200px;
     padding: 10px;
     border: none;
     }
@@ -479,4 +517,26 @@ padding: 10px;
             }
     #estadoproyectoMF{
         background-color: #c1c8e7;
+    }
+
+    @media (max-width: 800px) {
+        #contProd .contProds,
+        #contCompr .contComprs,
+        #contPapel .contPapels {
+            flex-direction: column; /* Change to column layout */
+            align-items: center; /* Center items horizontally */
+        }
+    
+        #contProd .contProds img,
+        #contCompr .contComprs img,
+        #contPapel .contPapels img {
+            height: 60px; /* Adjust image size for smaller screens */
+            width: 60px;
+        }
+    
+        #contProd .contProds .textoTarjeta,
+        #contCompr .contComprs .textoTarjeta,
+        #contPapel .contPapels .textoTarjeta {
+            align-items: center; /* Center text content */
+        }
     }
