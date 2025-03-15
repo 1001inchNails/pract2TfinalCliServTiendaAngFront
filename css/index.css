@@ -23,7 +23,7 @@ html, body {
 }
 body{
     background-color: #000;
-    background-image: url('../img/hank4.jpg');
+    background-image: url('../img/hank5.png');
     background-size: auto;
     background-position: center;
     background-repeat: no-repeat; 
@@ -132,6 +132,7 @@ h1 {
     display: flex;
     align-items: center; /* Center text vertically */
     justify-content: center; /* Center text horizontally */
+    margin-top: 65px;
   }
   /* Responsive adjustments */
   @media (max-width: 1200px) {
