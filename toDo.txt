@@ -1,18 +1,2 @@
-meter un grid a productos con responsive decreasing, gap suficiente
-buscar fotos de minerales, hacer productos
-
-cambiar tamaño de botones y todo el css en general
-
-cambiar estructura de paginas
-
-
-quitar barra scroll en chrome / edge
-
-cambiar titulos de paginas
-cambiar fondos...?
-
-poner comentarios bien
-borrar console logs
-
 
 readme

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrador</title>
+    <title>Hank's Mineral Emporium - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/admin.css" type="text/css">
 </head>
@@ -17,14 +17,14 @@
 <div class="container-fluid">
     <div id="menu">
         
-        <div class="d-flex justify-content-evenly mb-3 pe-3 ps-3 pt-3 pb-3">
+        <div class="botoneraNav d-flex justify-content-evenly mb-3 pe-3 ps-3 pt-3 pb-3">
             <button type="button" class="btn btn-success custom-padd" id="newProducto" data-bs-toggle="modal" data-bs-target="#nuevoProducto">Nuevo Producto</button>
             <button type="button" class="btn btn-info custom-padd" id="verDeleted">Historial de pedidos</button>
             <button type="button" class="btn btn-danger custom-padd" id="cerrarSesion">Salir</button>
         </div>
-        <div class="d-flex justify-content-evenly mb-3 pe-3 ps-3 pt-3 pb-3">
-            <button id="prodButt" type="button" class="btn btn-primary">PRODUCTOS</button>
-            <button id="comprButt" type="button" class="btn btn-primary">COMPRAS PENDIENTES</button>
+        <div class="botoneraNav d-flex justify-content-evenly mb-3 pe-3 ps-3 pt-3 pb-3">
+            <button id="prodButt" type="button" class="btn btn-primary">Productos</button>
+            <button id="comprButt" type="button" class="btn btn-primary">Compras pendientes</button>
         </div>
         <div class="d-flex justify-content-evenly mb-3 pe-3 ps-3 pt-3 pb-3">
             <div id="aviso" class="container welcome"><p></p></div>
@@ -43,14 +43,14 @@
 
         </div>
 
-        <!-- Columna Papelera -->
         <div id="contPapel" class="kanban-column ">
             <div class="contPapels"></div>
         </div>
 
     </div>
 </div>
-<!-- Modal nueva idea (menu) -->
+
+<!-- Modal nuevo producto -->
 <div class="modal fade" id="nuevoProducto" tabindex="-1" aria-labelledby="nuevoProductoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -161,11 +161,6 @@
     </div>
 </div>
 
-
-
-
-
-
 <!-- Para los pedidos -->
 <div class="modal fade" id="tarjetaModalP" tabindex="-1" role="dialog" aria-labelledby="tarjetaModalLabel" aria-hidden="true">
     <div id="modalMaxiP" class="modal-dialog" role="document">
@@ -198,7 +193,6 @@
         </div>
     </div>
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>    

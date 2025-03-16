@@ -1,563 +1,616 @@
 $(document).ready(async function(){
-    let micCheck;
-    await $.ajax({    // chequea al cargar la pagina que el usuario haya sido validado
-        type: 'POST',
-        url: '../php/accessValidation.php',
-        data: '',
-        success: function(response) {
-            console.log(response);
-            micCheck = response;
-        },
-        error: function(xhr, status, error) {
-            $('#result').html('<p>An error ocurred: ' + error + '</p>');
-        }
-    });
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let micCheck;
+await $.ajax({    // chequea al cargar la pagina que el usuario haya sido validado
+type: 'POST',
+url: '../php/accessValidation.php',
+data: '',
+success: function(response) {
+console.log(response);
+micCheck = response;
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+
 // estados para los toggles
 let estadoBotonProds=false;
 let estadoBotonComprs=false;
 let estadoBotonPapelera=false;
 
-
-let tarjetaActual;  // guardar datos de tarjeta actual para usar en el formulario de modificacion
+// datos de procesado de tarjetas
+let tarjetaActual;  
 let idActualProyecto;
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let userIdNombreParaBusqueda;
 let pedidoIdParaBusqueda;
+let pedidoIdParaBusqueda2;
 let stockPendiente;
 let idPedidoPPP;
 
-
-
-
-    if(micCheck == false){
-        await new Promise(resolve => setTimeout(resolve, 250)); 
-            window.location.href = "index.html"; 
-    }
-
-
-    function borrarContenedor(tipo) { // vaciado de contenedores segun tipo
-        $(`#cont${tipo} .cont${tipo}s`).empty();
-    }
-
-
-    function resetInputsNuevoProducto() {   //  resetea inputs de nuevo producto cuando se meten datos erroneos
-    $('#nuevoProducto').find('input[type="text"], input[type="hidden"], input[type="number"]').val('');
+// chequeo inicial de autenticacion
+if(micCheck == false){
+await new Promise(resolve => setTimeout(resolve, 250)); 
+window.location.href = "index.html"; 
 }
 
-    $('#nuevoProducto').submit(function(e) {    // envio de nuevo producto a bbdd
-        let producto = $('#nombreP').val();
-        let descripcion = $('#descripcionP').val();
-        let precio = $('#precioP').val();
-        let stock = $('#stockP').val();
-        stock = Number(stock);
-        let rutaImagen = $('#rutaImagenP').val();
-        console.log(producto,descripcion,precio,stock,rutaImagen);
-        e.preventDefault();
-        $.ajax({
-            type: 'POST',
-            url: 'http://localhost:5000/api/nuevoProducto',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
-            data: JSON.stringify({
-                "producto": producto,
-                "descripcion": descripcion,
-                "precio": precio,
-                "stock": stock,
-                "rutaImagen": rutaImagen
-            }),
-            success: function(response) {
-                console.log(response);                
+// vaciado de contenedores segun tipo
+function borrarContenedor(tipo) { 
+$(`#cont${tipo} .cont${tipo}s`).empty();
+}
 
-                $('#nuevoProducto').modal('hide');
-                resetInputsNuevoProducto();
-                borrarContenedor("Prod");
-                borrarContenedor("Compr");
-                borrarContenedor("Papel");
-                estadoBotonProds=false;
-                estadoBotonComprs=false;  
-                estadoBotonPapelera=false;
-                cargarProds('prods','Prod');
-                estadoBotonProds=true;
-  
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-        });
-    });
+//  resetea inputs de nuevo producto
+function resetInputsNuevoProducto() {   
+$('#nuevoProducto').find('input[type="text"], input[type="hidden"], input[type="number"]').val('');
+}
 
+// envio de nuevo producto a bbdd
+$('#nuevoProducto').submit(function(e) {    
+let producto = $('#nombreP').val();
+let descripcion = $('#descripcionP').val();
+let precio = $('#precioP').val();
+let stock = $('#stockP').val();
+stock = Number(stock);
+let rutaImagen = $('#rutaImagenP').val();
+e.preventDefault();
+$.ajax({
+type: 'POST',
+url: 'http://localhost:5000/api/nuevoProducto',
+contentType: 'application/json',
+data: JSON.stringify({
+"producto": producto,
+"descripcion": descripcion,
+"precio": precio,
+"stock": stock,
+"rutaImagen": rutaImagen
+}),
+success: function(response) {
+console.log(response);                
 
+$('#nuevoProducto').modal('hide');
+resetInputsNuevoProducto();
+$('#aviso').css('visibility','visible');
+$('#aviso p').text('Productos');
+$('#contPapel').css('display','none');
+$('#contProd').css('display','flex');
+$('#contCompr').css('display','none');
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+borrarContenedor("Papel");
+estadoBotonProds=false;
+estadoBotonComprs=false;  
+estadoBotonPapelera=false;
+cargarProds('prods','Prod');
+estadoBotonProds=true;
 
-    async function cargarProds(endpoint,prefijoContenedor) {
-        await $.ajax({    
-            type: 'GET',
-            url: `http://localhost:5000/api/${endpoint}`,
-            data: '',
-            success: function(response) {
-                console.log(response);
-                if(response.length==0){
-                    $(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
-                        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-                            <p style="font-size: 3rem; margin: 0; color: white;">
-                                No hay datos.
-                            </p>
-                        </div>
-                        `);
-                }else{
-                    let contadorTarj=0;
-                response.forEach(function(obj){
-                    $(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
-                        <div id="prod${contadorTarj}" class="tarjeta">
-                        <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.id}">
-                        <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-                        <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-                        <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-                        <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-                        <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-                        <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-                        <div class="textoTarjeta">
-                            <p name="tarjidunica">Id: ${obj.id}</p>
-                            <p name="titulo">Descripcion: ${obj.descripcion}</p>
-                        </div>
-                        
-                        </div>
-                        `);
-
-                    $(`#prod${contadorTarj}`).addClass('fondo1');
-
-                    contadorTarj++;
-                });
-                contadorTarj=0;
-                }
-                
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>Error: ' + error + '</p>');
-            }
-        });
-    }
-
-
-    async function cargarComprsAll() {
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/comprsall',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
-            data:'',
-            success: function(response) {
-                console.log(response);
-                if(response.length==0){
-                    $(`#contCompr .contComprs`).append(`
-                        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-                            <p style="font-size: 3rem; margin: 0; color: white;">
-                                No hay datos.
-                            </p>
-                        </div>
-                        `);
-                }else{
-                    let contadorTarj=0;
-                response.forEach(function(obj){
-                        $(`#contCompr .contComprs`).append(`
-                            <div id="compr${contadorTarj}" class="tarjetaP">
-                            <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
-                            <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
-                            <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-                            <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-                            <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-                            <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-                            <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-                            <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
-                            <input class="tarjuser" type="hidden" name="user" value="${obj.name}">
-                            <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-                            <div class="textoTarjeta">
-                                <p name="tarjidunica">Id: ${obj.id}</p>
-                                <p name="titulo">Descripcion: ${obj.descripcion}</p>
-                                <p name="titulo">Usuario: ${obj.name}</p>
-                            </div>
-                            
-                            </div>
-                            `);
-    
-                        $(`#compr${contadorTarj}`).addClass('fondo2');
-    
-                        contadorTarj++;
-                    
-                    
-                });
-                contadorTarj=0;
-                }
-                
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>Error: ' + error + '</p>');
-            }
-        });
-    }
-
-
-    $(document).on('click', '.tarjeta', function() { // para mostrar las tarjetas maximizadas (menus)
-        $('#botoneraMax').css('display','flex');
-        if(estadoBotonPapelera){
-            $('#botoneraMax').css('display','none');
-        }
-        let tarjeta=$(this);    
-        let datosTarjeta={
-            tarjidunica: tarjeta.find('.tarjidunica').attr('value'),
-            tarjproducto: tarjeta.find('.tarjproducto').attr('value'),
-            tarjdescripcion: tarjeta.find('.tarjdescripcion').attr('value'),
-            tarjprecio: tarjeta.find('.tarjprecio').attr('value'),
-            tarjstock: tarjeta.find('.tarjstock').attr('value'),
-            tarjrutaImagen: tarjeta.find('.tarjrutaImagen').attr('value')
-        };
-        idActualProyecto=datosTarjeta.tarjidunica;
-        $('#rutaImagenM').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
-        $('#rutaImagenM').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
-        $('#idM').text('Id: ' + datosTarjeta.tarjidunica);
-        $('#nombreM').text('Producto: ' + datosTarjeta.tarjproducto);
-        $('#descripcionM').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
-        $('#precioM').text('Precio: ' + datosTarjeta.tarjprecio);
-        $('#stockM').text('Stock: ' + datosTarjeta.tarjstock);
-
-        
-
-        tarjetaActual=[datosTarjeta];  // guardar datos de tarjeta actual para usar en el formulario de modificacion
-
-        $('#tarjetaModal').modal('show');
-    });
-
-    $(document).on('click', '#modifTarj',async function(){   // proceso de formulario de modificacion (tarjeta productos)
-        $('#modalMaxi').css('display','none');
-        $('#modificacionTarjeta').css('display','flex');
-
-        
-        $('#idMF').val(tarjetaActual[0].tarjidunica);
-        $('#nombreMF').val(tarjetaActual[0].tarjproducto);
-        $('#descripcionMF').val(tarjetaActual[0].tarjdescripcion);
-        $('#precioMF').val(tarjetaActual[0].tarjprecio);
-        $('#stockMF').val(tarjetaActual[0].tarjstock);
-        $('#rutaImagenMF').val(tarjetaActual[0].tarjrutaImagen);
-        
-    });
-
-    $(document).on('click','#cancelarModif',function(){ // cancelar formulario modif
-        $('#modalMaxi').css('display','flex');
-        $('#modificacionTarjeta').css('display','none');
-    });
-
-    $('#formModif').submit(async function(e) {    // envio de formulario modificado (productos)
-        e.preventDefault();
-        let idunica=$('#idMF').val();
-        let producto=$('#nombreMF').val();
-        let descripcion=$('#descripcionMF').val();
-        let precio=$('#precioMF').val();
-        let stock=$('#stockMF').val();
-        stock = Number(stock);
-        let rutaImagen=$('#rutaImagenMF').val();
-
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/modifProd',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma
-            data: JSON.stringify({
-                "id": idunica,
-                "producto": producto,
-                "descripcion": descripcion,
-                "precio": precio,
-                "stock": stock,
-                "rutaImagen": rutaImagen
-            }),
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-        });
-
-        $('#idMF').val('');
-        $('#nombreMF').val('');
-        $('#descripcionMF').val('');
-        $('#precioMF').empty();
-        $('#stockMF').val('');
-        $('#rutaImagenMF').val('');
-
-
-        $('#modalMaxi').css('display','flex');
-        $('#modificacionTarjeta').css('display','none');
-        $('#tarjetaModal').modal('hide');
-
-        borrarContenedor("Prod");
-        borrarContenedor("Compr");
-        borrarContenedor("Papel");
-        estadoBotonProds=false;
-        estadoBotonComprs=false;  
-        estadoBotonPapelera=false;
-        cargarProds('prods','Prod');
-        estadoBotonProds=true;
-    });
-
-
-//{"idkey":"nombreCampoId","idvalue":"valorDeId","coleccOrigen":"nombreColeccOriginal","coleccDestino":"nombreColeccDestino"}
-$('#deleteTarj').on('click', async function(){  // borrado de tarjeta (producto)
-    await $.ajax({    
-        type: 'POST',
-        url: 'http://localhost:5000/api/moverDocumento',
-        contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
-        data: JSON.stringify({
-            "idkey": "id",
-            "idvalue": idActualProyecto,
-            "coleccOrigen": "productos",
-            "coleccDestino": "productosHistorial"
-        }),
-        success: function(response) {
-            console.log(response);
-            $('#tarjetaModal').modal('hide');
-            borrarContenedor("Prod");
-                borrarContenedor("Compr");
-                borrarContenedor("Papel");
-                estadoBotonProds=false;
-                estadoBotonComprs=false;  
-                estadoBotonPapelera=false;
-                cargarProds('prods','Prod');
-                estadoBotonProds=true;
-
-        },
-        error: function(xhr, status, error) {
-            $('#result').html('<p>An error ocurred: ' + error + '</p>');
-        }
-    });
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
 });
 
 
-$(document).on('click', '.tarjetaP', function() { // para mostrar las tarjetas maximizadas (menus)
-    $('#botoneraMaxP').css('display','flex');
-    let tarjetaP=$(this);
-    let datosTarjeta={
-        tarjuser: tarjetaP.find('.tarjuser').attr('value'),
-        tarjidunica: tarjetaP.find('.tarjidunica').attr('value'),
-        tarjidunicaProducto: tarjetaP.find('.tarjidunicaProducto').attr('value'),
-        tarjproducto: tarjetaP.find('.tarjproducto').attr('value'),
-        tarjdescripcion: tarjetaP.find('.tarjdescripcion').attr('value'),
-        tarjprecio: tarjetaP.find('.tarjprecio').attr('value'),
-        tarjstock: tarjetaP.find('.tarjstock').attr('value'),
-        tarjrutaImagen: tarjetaP.find('.tarjrutaImagen').attr('value'),
-        tarjestado: tarjetaP.find('.tarjestado').attr('value')
-    };
-    let totalP = Number(datosTarjeta.tarjprecio) * Number(datosTarjeta.tarjstock);
-    $('#rutaImagenPPP').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
-    $('#rutaImagenPPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
-    $('#userPPP').text('Usuario: ' + datosTarjeta.tarjuser);
-    $('#idPedidoPPP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
-    $('#idProductoPPP').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
-    idPedidoPPP = datosTarjeta.tarjidunicaProducto;
-    $('#productoPPP').text('Producto: ' + datosTarjeta.tarjproducto);
-    $('#descripcionPPP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
-    $('#precioPPP').text('Precio: ' + datosTarjeta.tarjprecio);
-    $('#stockPPP').text('Cantidad: ' + datosTarjeta.tarjstock);
-    stockPendiente = Number(datosTarjeta.tarjstock);
-    $('#estadoPPP').text('Estado: ' + datosTarjeta.tarjestado);
-    $('#totalPPP').text('Total: ' + totalP);
-    userIdNombreParaBusqueda = datosTarjeta.tarjuser;
-    pedidoIdParaBusqueda = datosTarjeta.tarjidunica;
-    $('#tarjetaModalP').modal('show');
+// carga de elemento - productos
+async function cargarProds(endpoint,prefijoContenedor) {
+await $.ajax({    
+type: 'GET',
+url: `http://localhost:5000/api/${endpoint}`,
+data: '',
+success: function(response) {
+console.log(response);
+if(response.length==0){
+$(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
+<div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}else{
+if(prefijoContenedor == 'Papel'){   // condicional para la carga en apartado historial
+let contadorTarj=0;
+response.forEach(function(obj){
+$(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
+<div id="ped${contadorTarj}" class="tarjetaP">
+<input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+<input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+<input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+<input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+<input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+<input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+<input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+<input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+<input class="tarjuser" type="hidden" name="user" value="${obj.username}">
+<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+<div class="textoTarjeta">
+<p name="tarjidunica">Id: ${obj.id}</p>
+<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">Estado: ${obj.estado}</p>
+</div>
+
+</div>
+`);
+
+$(`#ped${contadorTarj}`).addClass('fondo2');
+
+contadorTarj++;
+
+
 });
-    
+contadorTarj=0;
+}else{
+let contadorTarj=0;
+response.forEach(function(obj){
+$(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
+<div id="prod${contadorTarj}" class="tarjeta">
+<input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.id}">
+<input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+<input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+<input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+<input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+<input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+<div class="textoTarjeta">
+<p name="tarjidunica">Id: ${obj.id}</p>
+<p name="titulo">Nombre: ${obj.producto}</p>
+</div>
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    $('#prodButt').on('click',async function(){ // funcionalidad toggle para boton de mostrar productos
-        $('#aviso').css('visibility','visible');
-        $('#aviso p').text('Productos');
-        $('#contPapel').css('display','none');
-        $('#contProd').css('display','flex');
-        $('#contCompr').css('display','none');
-        estadoBotonComprs=false;
-        estadoBotonPapelera=false;
-        borrarContenedor("Prod");
-        borrarContenedor("Compr");
-        borrarContenedor("Papel");
-        if(estadoBotonProds){
-            borrarContenedor("Prod");
-            estadoBotonProds=false;
-        }else{
-            borrarContenedor("Prod");
-            cargarProds('prods','Prod');
-            estadoBotonProds=true;
-        }
-    });
+</div>
+`);
 
+$(`#prod${contadorTarj}`).addClass('fondo1');
 
-    $('#cerrarSesion').on('click',async function(){
-        url="index.html";  // para volver al login
-                setTimeout(function() { // necesario en firefox
-                    window.location.href = url;      
-                }, 1000);
-    });
+contadorTarj++;
+});
+contadorTarj=0;
+}
 
-    $('#comprButt').on('click',async function(){ // funcionalidad toggle para boton de mostrar productos
-        $('#aviso').css('visibility','visible');
-        $('#aviso p').text('Compras pendientes');
-        $('#contPapel').css('display','none');
-        $('#contProd').css('display','none');
-        $('#contCompr').css('display','flex');
-        estadoBotonProds=false;
-        estadoBotonPapelera=false;
-        borrarContenedor("Prod");
-        borrarContenedor("Compr");
-        borrarContenedor("Papel");
-        if(estadoBotonComprs){
-            borrarContenedor("Compr");
-            
-            estadoBotonComprs=false;
-        }else{
-            borrarContenedor("Compr");
-            cargarComprsAll();
-            estadoBotonComprs=true;
-        }
-    });
+}
 
-    $('#verDeleted').on('click',async function(){
-        $('#aviso').css('visibility','visible');
-        $('#aviso p').text('Historial de pedidos');
-        $('#contPapel').css('display','flex');
-        $('#contProd').css('display','none');
-        $('#contCompr').css('display','none');
-        estadoBotonProds=false;
-        estadoBotonComprs=false;
-        borrarContenedor("Prod");
-        borrarContenedor("Compr");
-        borrarContenedor("Papel");
-        if(estadoBotonPapelera){
-            borrarContenedor("Papel");
-            estadoBotonPapelera=false;
-        }else{
-            borrarContenedor("Papel");
-            cargarProds('hist','Papel');
-            estadoBotonPapelera=true;
-        }
-    });
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>Error: ' + error + '</p>');
+}
+});
+}
 
-    $('#modifTarjAcepP').on('click',async function(){
-        console.log(userIdNombreParaBusqueda,pedidoIdParaBusqueda);
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/cambiarEstado',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
-            data: JSON.stringify({
-                "estado":"completado",
-                "username":userIdNombreParaBusqueda,
-                "idkey": "idPedido",
-                "idvalue": pedidoIdParaBusqueda,
-                "coleccOrigen": "creds"
-            }),
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-        });
+// carga de elementos - compras pendientes
+async function cargarComprsAll() {
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/comprsall',
+contentType: 'application/json',
+data:'',
+success: function(response) {
+console.log(response);
+if(response.length==0){
+$(`#contCompr .contComprs`).append(`
+<div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}else{
+let contadorTarj=0;
+response.forEach(function(obj){
+$(`#contCompr .contComprs`).append(`
+<div id="compr${contadorTarj}" class="tarjetaP">
+<input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+<input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+<input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+<input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+<input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+<input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+<input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+<input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+<input class="tarjuser" type="hidden" name="user" value="${obj.name}">
+<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+<div class="textoTarjeta">
+<p name="tarjidunica">Id: ${obj.id}</p>
+<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">Usuario: ${obj.name}</p>
+</div>
 
-        
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/copiarDocumento',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
-            data: JSON.stringify({
-                "username":userIdNombreParaBusqueda,
-                "idkey": "idPedido",
-                "idvalue": pedidoIdParaBusqueda,
-                "coleccOrigen": "creds",
-                "coleccDestino": "pedidosHistorial"
-            }),
-            success: function(response) {
-                console.log(response);
-                $('#tarjetaModalP').modal('hide');
-                estadoBotonProds=false;
-                estadoBotonPapelera=false;
-                borrarContenedor("Prod");
-                borrarContenedor("Compr");
-                borrarContenedor("Papel");
-                cargarComprsAll();
-                estadoBotonComprs=true;
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-        });
-        
-    });
+</div>
+`);
+
+$(`#compr${contadorTarj}`).addClass('fondo2');
+
+contadorTarj++;
 
 
-    $('#modifTarjRechP').on('click',async function(){
-        console.log(userIdNombreParaBusqueda,pedidoIdParaBusqueda);
-        let idProducto = idPedidoPPP;
+});
+contadorTarj=0;
+}
 
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/devolverStock',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
-            data: JSON.stringify({
-                "idProducto":idProducto,
-                "extrastock":stockPendiente
-            }),
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-        });
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>Error: ' + error + '</p>');
+}
+});
+}
+
+// para mostrar las tarjetas maximizadas
+$(document).on('click', '.tarjeta', function() { 
+$('#botoneraMax').css('display','flex');
+if(estadoBotonPapelera){
+$('#botoneraMax').css('display','none');
+}
+let tarjeta=$(this);    
+let datosTarjeta={
+tarjidunica: tarjeta.find('.tarjidunica').attr('value'),
+tarjproducto: tarjeta.find('.tarjproducto').attr('value'),
+tarjdescripcion: tarjeta.find('.tarjdescripcion').attr('value'),
+tarjprecio: tarjeta.find('.tarjprecio').attr('value'),
+tarjstock: tarjeta.find('.tarjstock').attr('value'),
+tarjrutaImagen: tarjeta.find('.tarjrutaImagen').attr('value')
+};
+idActualProyecto=datosTarjeta.tarjidunica;
+pedidoIdParaBusqueda2 = idActualProyecto;
+$('#rutaImagenM').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
+$('#rutaImagenM').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
+$('#idM').text('Id: ' + datosTarjeta.tarjidunica);
+$('#nombreM').text('Producto: ' + datosTarjeta.tarjproducto);
+$('#descripcionM').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
+$('#precioM').text('Precio: ' + datosTarjeta.tarjprecio);
+$('#stockM').text('Stock: ' + datosTarjeta.tarjstock);
 
 
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/cambiarEstado',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
-            data: JSON.stringify({
-                "estado":"rechazado",
-                "username":userIdNombreParaBusqueda,
-                "idkey": "idPedido",
-                "idvalue": pedidoIdParaBusqueda,
-                "coleccOrigen": "creds"
-            }),
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-        });
 
-        
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/copiarDocumento',
-            contentType: 'application/json', // Especifica que el contenido es JSON porque AJAX es el producto de una mente enferma y retorcida
-            data: JSON.stringify({
-                "username":userIdNombreParaBusqueda,
-                "idkey": "idPedido",
-                "idvalue": pedidoIdParaBusqueda,
-                "coleccOrigen": "creds",
-                "coleccDestino": "pedidosHistorial"
-            }),
-            success: function(response) {
-                console.log(response);
-                $('#tarjetaModalP').modal('hide');
-                estadoBotonProds=false;
-                estadoBotonPapelera=false;
-                borrarContenedor("Prod");
-                borrarContenedor("Compr");
-                borrarContenedor("Papel");
-                cargarComprsAll();
-                estadoBotonComprs=true;
-            },
-            error: function(xhr, status, error) {
-                $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-        });
+tarjetaActual=[datosTarjeta];  // guardar datos de tarjeta actual para usar en el formulario de modificacion
 
-        
-    });
+$('#tarjetaModal').modal('show');
+});
 
-    
+// proceso de formulario de modificacion (tarjeta productos)
+$(document).on('click', '#modifTarj',async function(){   
+$('#modalMaxi').css('display','none');
+$('#modificacionTarjeta').css('display','flex');
+
+$('#idMF').val(tarjetaActual[0].tarjidunica);
+$('#nombreMF').val(tarjetaActual[0].tarjproducto);
+$('#descripcionMF').val(tarjetaActual[0].tarjdescripcion);
+$('#precioMF').val(tarjetaActual[0].tarjprecio);
+$('#stockMF').val(tarjetaActual[0].tarjstock);
+$('#rutaImagenMF').val(tarjetaActual[0].tarjrutaImagen);
+
+});
+
+// cancelar modificacion de formulario (productos)
+$(document).on('click','#cancelarModif',function(){ 
+$('#modalMaxi').css('display','flex');
+$('#modificacionTarjeta').css('display','none');
+});
+
+// envio de formulario modificado (productos)
+$('#formModif').submit(async function(e) {    
+e.preventDefault();
+let idunica=$('#idMF').val();
+let producto=$('#nombreMF').val();
+let descripcion=$('#descripcionMF').val();
+let precio=$('#precioMF').val();
+let stock=$('#stockMF').val();
+stock = Number(stock);
+let rutaImagen=$('#rutaImagenMF').val();
+
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/modifProd',
+contentType: 'application/json',
+data: JSON.stringify({
+"id": idunica,
+"producto": producto,
+"descripcion": descripcion,
+"precio": precio,
+"stock": stock,
+"rutaImagen": rutaImagen
+}),
+success: function(response) {
+console.log(response);
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+
+$('#idMF').val('');
+$('#nombreMF').val('');
+$('#descripcionMF').val('');
+$('#precioMF').empty();
+$('#stockMF').val('');
+$('#rutaImagenMF').val('');
+
+
+$('#modalMaxi').css('display','flex');
+$('#modificacionTarjeta').css('display','none');
+$('#tarjetaModal').modal('hide');
+
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+borrarContenedor("Papel");
+estadoBotonProds=false;
+estadoBotonComprs=false;  
+estadoBotonPapelera=false;
+cargarProds('prods','Prod');
+estadoBotonProds=true;
+});
+
+// borrado de tarjeta (producto)
+$('#deleteTarj').on('click', async function(){
+await $.ajax({      // para que al borrar un producto se borren todos los pedidos de ese producto que esten pendientes 
+type: 'POST',
+url: 'http://localhost:5000/api/removePedidosDeProductosEliminados',
+contentType: 'application/json',
+data: JSON.stringify({
+"idProducto": pedidoIdParaBusqueda2
+}),
+success: function(response) {
+console.log(response);
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/moverDocumento',
+contentType: 'application/json',
+data: JSON.stringify({
+"idkey": "id",
+"idvalue": idActualProyecto,
+"coleccOrigen": "productos",
+"coleccDestino": "productosHistorial"
+}),
+success: function(response) {
+console.log(response);
+$('#tarjetaModal').modal('hide');
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+borrarContenedor("Papel");
+estadoBotonProds=false;
+estadoBotonComprs=false;  
+estadoBotonPapelera=false;
+cargarProds('prods','Prod');
+estadoBotonProds=true;
+
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+});
+
+// para mostrar las tarjetas maximizadas
+$(document).on('click', '.tarjetaP', function() {
+$('#botoneraMaxP').css('display','flex');
+if(estadoBotonPapelera){
+$('#botoneraMaxP').css('display','none');
+}
+let tarjetaP=$(this);
+let datosTarjeta={
+tarjuser: tarjetaP.find('.tarjuser').attr('value'),
+tarjidunica: tarjetaP.find('.tarjidunica').attr('value'),
+tarjidunicaProducto: tarjetaP.find('.tarjidunicaProducto').attr('value'),
+tarjproducto: tarjetaP.find('.tarjproducto').attr('value'),
+tarjdescripcion: tarjetaP.find('.tarjdescripcion').attr('value'),
+tarjprecio: tarjetaP.find('.tarjprecio').attr('value'),
+tarjstock: tarjetaP.find('.tarjstock').attr('value'),
+tarjrutaImagen: tarjetaP.find('.tarjrutaImagen').attr('value'),
+tarjestado: tarjetaP.find('.tarjestado').attr('value')
+};
+let totalP = Number(datosTarjeta.tarjprecio) * Number(datosTarjeta.tarjstock);
+$('#rutaImagenPPP').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
+$('#rutaImagenPPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
+$('#userPPP').text('Usuario: ' + datosTarjeta.tarjuser);
+$('#idPedidoPPP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
+$('#idProductoPPP').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
+idPedidoPPP = datosTarjeta.tarjidunicaProducto;
+$('#productoPPP').text('Producto: ' + datosTarjeta.tarjproducto);
+$('#descripcionPPP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
+$('#precioPPP').text('Precio: ' + datosTarjeta.tarjprecio);
+$('#stockPPP').text('Cantidad: ' + datosTarjeta.tarjstock);
+stockPendiente = Number(datosTarjeta.tarjstock);
+$('#estadoPPP').text('Estado: ' + datosTarjeta.tarjestado);
+$('#totalPPP').text('Total: ' + totalP);
+userIdNombreParaBusqueda = datosTarjeta.tarjuser;
+pedidoIdParaBusqueda = datosTarjeta.tarjidunica;
+$('#tarjetaModalP').modal('show');
+});
+
+
+/*            Botones            */
+
+// funcionalidad toggle para boton de mostrar productos
+$('#prodButt').on('click',async function(){ 
+$('#aviso').css('visibility','visible');
+$('#aviso p').text('Productos');
+$('#contPapel').css('display','none');
+$('#contProd').css('display','flex');
+$('#contCompr').css('display','none');
+estadoBotonComprs=false;
+estadoBotonPapelera=false;
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+borrarContenedor("Papel");
+if(estadoBotonProds){
+borrarContenedor("Prod");
+estadoBotonProds=false;
+}else{
+borrarContenedor("Prod");
+cargarProds('prods','Prod');
+estadoBotonProds=true;
+}
+});
+
+// para volver al login
+$('#cerrarSesion').on('click',async function(){
+url="index.html";  
+setTimeout(function() { // necesario en firefox
+window.location.href = url;      
+}, 1000);
+});
+
+// funcionalidad toggle para boton de mostrar productos
+$('#comprButt').on('click',async function(){ 
+$('#aviso').css('visibility','visible');
+$('#aviso p').text('Compras pendientes');
+$('#contPapel').css('display','none');
+$('#contProd').css('display','none');
+$('#contCompr').css('display','flex');
+estadoBotonProds=false;
+estadoBotonPapelera=false;
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+borrarContenedor("Papel");
+if(estadoBotonComprs){
+borrarContenedor("Compr");
+
+estadoBotonComprs=false;
+}else{
+borrarContenedor("Compr");
+cargarComprsAll();
+estadoBotonComprs=true;
+}
+});
+
+$('#verDeleted').on('click',async function(){
+$('#aviso').css('visibility','visible');
+$('#aviso p').text('Historial de pedidos');
+$('#contPapel').css('display','flex');
+$('#contProd').css('display','none');
+$('#contCompr').css('display','none');
+estadoBotonProds=false;
+estadoBotonComprs=false;
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+borrarContenedor("Papel");
+if(estadoBotonPapelera){
+borrarContenedor("Papel");
+estadoBotonPapelera=false;
+}else{
+borrarContenedor("Papel");
+cargarProds('hist','Papel');
+estadoBotonPapelera=true;
+}
+});
+
+// aceptar pedido
+$('#modifTarjAcepP').on('click',async function(){
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/cambiarEstado',
+contentType: 'application/json',
+data: JSON.stringify({
+"estado":"completado",
+"username":userIdNombreParaBusqueda,
+"idkey": "idPedido",
+"idvalue": pedidoIdParaBusqueda,
+"coleccOrigen": "creds"
+}),
+success: function(response) {
+console.log(response);
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/copiarDocumento',
+contentType: 'application/json',
+data: JSON.stringify({
+"username":userIdNombreParaBusqueda,
+"idkey": "idPedido",
+"idvalue": pedidoIdParaBusqueda,
+"coleccOrigen": "creds",
+"coleccDestino": "pedidosHistorial"
+}),
+success: function(response) {
+console.log(response);
+$('#tarjetaModalP').modal('hide');
+estadoBotonProds=false;
+estadoBotonPapelera=false;
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+borrarContenedor("Papel");
+cargarComprsAll();
+estadoBotonComprs=true;
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+
+});
+
+// rechazar pedido
+$('#modifTarjRechP').on('click',async function(){
+let idProducto = idPedidoPPP;
+
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/devolverStock',
+contentType: 'application/json',
+data: JSON.stringify({
+"idProducto":idProducto,
+"extrastock":stockPendiente
+}),
+success: function(response) {
+console.log(response);
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/cambiarEstado',
+contentType: 'application/json',
+data: JSON.stringify({
+"estado":"rechazado",
+"username":userIdNombreParaBusqueda,
+"idkey": "idPedido",
+"idvalue": pedidoIdParaBusqueda,
+"coleccOrigen": "creds"
+}),
+success: function(response) {
+console.log(response);
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/copiarDocumento',
+contentType: 'application/json',
+data: JSON.stringify({
+"username":userIdNombreParaBusqueda,
+"idkey": "idPedido",
+"idvalue": pedidoIdParaBusqueda,
+"coleccOrigen": "creds",
+"coleccDestino": "pedidosHistorial"
+}),
+success: function(response) {
+console.log(response);
+$('#tarjetaModalP').modal('hide');
+estadoBotonProds=false;
+estadoBotonPapelera=false;
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+borrarContenedor("Papel");
+cargarComprsAll();
+estadoBotonComprs=true;
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+
+});
+
 });
