@@ -1,2 +1,5 @@
-
+cambiar css menus modificacion y maximizado y compra
 readme
+
+
+HACER CARRITO, al añadir al carrito resta el stock, carrito debe caducar y restaurar stock cuando caduca
