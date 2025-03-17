@@ -1,19 +1,22 @@
 $(document).ready(async function(){
 let micCheck;
-await $.ajax({    // chequea al cargar la pagina que el usuario haya sido validado
-type: 'POST',
-url: '../php/accessValidation.php',
-data: '',
-success: function(response) {
-console.log(response);
-micCheck = response;
-},
-error: function(xhr, status, error) {
-$('#result').html('<p>An error ocurred: ' + error + '</p>');
+// chequeo inicial de autorizacion
+const token = localStorage.getItem("jwt");
+if (!token) {
+window.location.href = "index.html";
+console.log("no token");
+return;
 }
-});
+try {
+const payload = JSON.parse(atob(token.split('.')[1])); // decodificar payload
+micCheck = payload.nombre;
+} catch (e) {
+console.error("Invalid token:", e);
+localStorage.removeItem("jwt"); // if(error){nukeIt();}
+await new Promise(resolve => setTimeout(resolve, 5000));
+window.location.href = "index.html";
+}
 $('#nombreUser').text(micCheck);
-
 // estados para los toggles
 let estadoBotonProds=false;
 let estadoBotonComprs=false;
@@ -46,7 +49,7 @@ if(response.length==0){
 $(`#contProd .contProds`).append(`
 <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
 <p style="font-size: 3rem; margin: 0; color: white;">
-    No hay datos.
+No hay datos.
 </p>
 </div>
 `);
@@ -64,8 +67,8 @@ $(`#contProd .contProds`).append(`
 <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
 <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
 <div class="textoTarjeta">
-    <p name="tarjidunica">Id: ${obj.id}</p>
-    <p name="titulo">Nombre: ${obj.producto}</p>
+<p name="tarjidunica">Id: ${obj.id}</p>
+<p name="titulo">Nombre: ${obj.producto}</p>
 </div>
 
 </div>
@@ -102,7 +105,7 @@ if(response.length==0){
 $(`#contCompr .contComprs`).append(`
 <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
 <p style="font-size: 3rem; margin: 0; color: white;">
-    No hay datos.
+No hay datos.
 </p>
 </div>
 `);
@@ -121,9 +124,9 @@ $(`#contCompr .contComprs`).append(`
 <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
 <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
 <div class="textoTarjeta">
-    <p name="tarjidunica">Id: ${obj.id}</p>
-    <p name="titulo">Nombre: ${obj.producto}</p>
-    <p name="titulo">Estado: ${obj.estado}</p>
+<p name="tarjidunica">Id: ${obj.id}</p>
+<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">Estado: ${obj.estado}</p>
 </div>
 
 </div>

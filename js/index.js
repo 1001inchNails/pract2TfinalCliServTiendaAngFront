@@ -1,20 +1,6 @@
 $(document).ready(async function(){
-
-// chequea al cargar la pagina que el usuario haya sido validado
-await $.ajax({    
-type: 'POST',
-url: '../php/borrarSession.php',
-data: '',
-success: function(response) {
-if(response=='false'){  // en caso contrario vuelve a pantalla de login
-window.location.href = '../html/index.html';
-}
-},
-error: function(xhr, status, error) {
-$('#result').html('<p>An error ocurred: ' + error + '</p>');
-}
-});
-
+localStorage.removeItem("jwt"); // clear inicial
+let autoriz = true;
 // procesado de formulario de login
 $('#formLogin').submit(async function(e) {
 e.preventDefault();
@@ -37,28 +23,35 @@ responseA = response.resultado;
 
 if(responseA && nombre == 'admin'){
 
-await $.ajax({    
-type: 'POST',
-url: '../php/login.php',
-data: {"nombre": nombre},
-success: async function(response) {
-console.log(response);                   
-}
-});
-await new Promise(resolve => setTimeout(resolve, 1000)); 
-window.location.href = "admin.html";
+    const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, autoriz })
+    });
+
+    const data = await response.json();
+    if (response.ok && data.token) {        
+        localStorage.setItem("jwt", data.token);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        window.location.assign("admin.html");
+    } else {
+        console.log("Login failed: " + (data.message || "Unknown error"));
+    }   
 }else if(responseA && nombre !== 'admin'){ 
-console.log("/*/*/*/*",nombre);
-await $.ajax({    
-type: 'POST',
-url: '../php/login.php',
-data: {"nombre": nombre},
-success: async function(response) {
-console.log(response);                   
-}
-});
-await new Promise(resolve => setTimeout(resolve, 1000));
-window.location.href = "client.html";                  
+    const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, autoriz })
+    });
+
+    const data = await response.json();
+    if (response.ok && data.token) {
+        localStorage.setItem("jwt", data.token);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        window.location.assign("client.html");
+    } else {
+        console.log("Login failed: " + (data.message || "Unknown error"));
+    }             
 }else{
 $('#nombre').val("");
 $('#password').val("");
