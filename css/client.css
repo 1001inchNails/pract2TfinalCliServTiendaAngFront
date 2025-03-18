@@ -71,6 +71,9 @@ margin: 0;
 color: white;
 z-index: 1;
 }
+#contBotComprar{
+    display: none;
+}
 #aviso{
 visibility: hidden;
 margin: 0;

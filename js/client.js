@@ -25,6 +25,7 @@ let tarjetaActual;
 let maxStock = 0;
 let currentEstado;
 let pedidoIdParaBusqueda;
+let haypedidosenCarrito = false;
 
 // chequeo inicial de autenticacion
 if(micCheck == false){
@@ -91,7 +92,7 @@ $('#result').html('<p>Error: ' + error + '</p>');
 }
 
 // cargar compras del usuario
-async function cargarComprs(user) {
+async function cargarComprs(user,tipoACargar) {
 await $.ajax({    
 type: 'POST',
 url: 'http://localhost:5000/api/comprs',
@@ -100,7 +101,7 @@ data: JSON.stringify({
 "user": user
 }),
 success: function(response) {
-console.log(response);
+console.log("compras: ",response);
 if(response.length==0){
 $(`#contCompr .contComprs`).append(`
 <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
@@ -109,33 +110,36 @@ No hay datos.
 </p>
 </div>
 `);
+haypedidosenCarrito = false;
 }else{
+    haypedidosenCarrito = true;
 let contadorTarj=0;
 response.forEach(function(obj){
-$(`#contCompr .contComprs`).append(`
-<div id="compr${contadorTarj}" class="tarjetaP">
-<input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
-<input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
-<input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-<input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-<input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-<input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-<input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-<input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
-<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-<div class="textoTarjeta">
-<p name="tarjidunica">Id: ${obj.id}</p>
-<p name="titulo">Nombre: ${obj.producto}</p>
-<p name="titulo">Estado: ${obj.estado}</p>
-</div>
-
-</div>
-`);
-
-$(`#compr${contadorTarj}`).addClass('fondo2');
-
-contadorTarj++;
-
+    if(obj.estado === tipoACargar){
+        $(`#contCompr .contComprs`).append(`
+            <div id="compr${contadorTarj}" class="tarjetaP">
+            <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+            <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+            <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+            <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+            <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+            <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+            <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+            <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+            <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+            <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+            <div class="textoTarjeta">
+            <p name="titulo">Nombre: ${obj.producto}</p>
+            <p name="titulo">Cantidad: ${obj.stock}</p>
+            </div>
+            
+            </div>
+            `);
+            
+            $(`#compr${contadorTarj}`).addClass('fondo2');
+            
+            contadorTarj++;
+    }
 
 });
 contadorTarj=0;
@@ -209,12 +213,31 @@ let precio=$('#precioMF').text();
 let stock=$('#stockMF').val();
 stock = Number(stock);
 let rutaImagen=$('#rutaImagenMF').attr('src');
+let numeroPedidoClienteHistorico;
+
+await $.ajax({    
+    type: 'POST',
+    url: 'http://localhost:5000/api/getnumpedidoscli',
+    contentType: 'application/json',
+    data: JSON.stringify({
+    "user":micCheck
+    }),
+    success: function(response) {
+    console.log("historico pedidos clientes : ",response);
+    numeroPedidoClienteHistorico = response.numero;
+    console.log("historico pedidos clientes numero : ",numeroPedidoClienteHistorico);
+    },
+    error: function(xhr, status, error) {
+    $('#result').html('<p>An error ocurred: ' + error + '</p>');
+    }
+    });
 
 await $.ajax({    
 type: 'POST',
 url: 'http://localhost:5000/api/enviarPedido',
 contentType: 'application/json',
 data: JSON.stringify({
+"numeroHistoricoPedidos":numeroPedidoClienteHistorico,
 "nombreUser":micCheck,
 "id": idunica,
 "producto": producto,
@@ -222,7 +245,7 @@ data: JSON.stringify({
 "precio": precio,
 "stock": stock,
 "rutaImagen": rutaImagen,
-"estado": "pendiente"
+"estado": "seleccionado"
 }),
 success: function(response) {
 console.log(response);
@@ -279,6 +302,7 @@ let tarjetaP=$(this);
 let datosTarjeta={
 tarjidunica: tarjetaP.find('.tarjidunica').attr('value'),
 tarjidunicaProducto: tarjetaP.find('.tarjidunicaProducto').attr('value'),
+tarjidunicaProductoHistorico: tarjetaP.find('.tarjidunicaProductoHistorico').attr('value'),
 tarjproducto: tarjetaP.find('.tarjproducto').attr('value'),
 tarjdescripcion: tarjetaP.find('.tarjdescripcion').attr('value'),
 tarjprecio: tarjetaP.find('.tarjprecio').attr('value'),
@@ -292,7 +316,8 @@ let totalP = Number(datosTarjeta.tarjprecio) * Number(datosTarjeta.tarjstock);
 $('#rutaImagenPP').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
 $('#rutaImagenPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
 $('#idPedidoP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
-$('#idProductoP').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
+$('#idPedidoHistoricoP').text('Codigo de pedido: ' + datosTarjeta.tarjidunica);
+$('#idProductoP').text('Id de producto: ' + datosTarjeta.tarjidunicaProductoHistorico);
 idPedidoPPP = datosTarjeta.tarjidunicaProducto;
 $('#productoP').text('Producto: ' + datosTarjeta.tarjproducto);
 $('#descripcionP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
@@ -306,7 +331,7 @@ $('#totalP').text('Total: ' + totalP);
 $('#tarjetaModalP').modal('show');
 });
 
-// para eliminar/cancelar pedidos
+// para eliminar/cancelar pedidos en CARRITO
 $(document).on('click', '#modifTarjEliminar', async function() { 
 $('#tarjetaModalP').modal('hide');
 let copiarObjeto;
@@ -376,7 +401,7 @@ borrarContenedor("Prod");
 borrarContenedor("Compr");
 estadoBotonProds=false;
 estadoBotonComprs=false;
-cargarComprs(micCheck);
+cargarComprs(micCheck,"seleccionado");
 estadoBotonComprs=true;
 
 });
@@ -385,6 +410,7 @@ estadoBotonComprs=true;
 
 // funcionalidad toggle para boton de mostrar productos
 $('#prodButt').on('click',async function(){ 
+    $('#contBotComprar').css('display','none');
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Productos');
 $('#contProd').css('display','flex');
@@ -403,10 +429,11 @@ estadoBotonProds=true;
 }
 });
 
-// funcionalidad toggle para boton de mostrar compras
+// funcionalidad toggle para boton de mostrar compras (carrito)
 $('#comprButt').on('click',async function(){ 
 $('#aviso').css('visibility','visible');
-$('#aviso p').text('Compras');
+$('#contBotComprar').css('display','flex');
+$('#aviso p').text('Elementos en carrito');
 $('#contProd').css('display','none');
 $('#contCompr').css('display','flex');
 estadoBotonProds=false;
@@ -419,11 +446,24 @@ borrarContenedor("Compr");
 estadoBotonComprs=false;
 }else{
 borrarContenedor("Compr");
-cargarComprs(micCheck);
+cargarComprs(micCheck,"seleccionado");
 estadoBotonComprs=true;
 }
 
 });
+
+// funcionalidad para boton de enviar carrito a pedidos
+$('#sendCarritoButt').on('click',async function(){ 
+    if(haypedidosenCarrito){
+        FUNCION PARA CAMBIAR ESTADO DE SELECCIONADO A PENDIENTE, crear contenedor para pedidos pendientes que muestre pedidos pendientes
+        borrarContenedor("Compr");
+        cargarComprs(micCheck,"seleccionado");
+        estadoBotonComprs=true;
+        
+    }
+    
+    
+    });
 
 // para volver al login
 $('#cerrarSesion').on('click',async function(){
