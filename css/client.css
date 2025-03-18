@@ -72,6 +72,11 @@ color: white;
 z-index: 1;
 }
 #contBotComprar{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+#sendCarritoButt,#verPendientesButt,#verHistorialButt{
     display: none;
 }
 #aviso{

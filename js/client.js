@@ -1,5 +1,6 @@
 $(document).ready(async function(){
 let micCheck;
+let numeroPedidoClienteHistorico;
 // chequeo inicial de autorizacion
 const token = localStorage.getItem("jwt");
 if (!token) {
@@ -17,6 +18,23 @@ await new Promise(resolve => setTimeout(resolve, 5000));
 window.location.href = "index.html";
 }
 $('#nombreUser').text(micCheck);
+
+await $.ajax({    
+    type: 'POST',
+    url: 'http://localhost:5000/api/getnumpedidoscli',
+    contentType: 'application/json',
+    data: JSON.stringify({
+    "user":micCheck
+    }),
+    success: function(response) {
+    console.log("historico pedidos clientes : ",response);
+    numeroPedidoClienteHistorico = response.numero;
+    console.log("historico pedidos clientes numero : ",numeroPedidoClienteHistorico);
+    },
+    error: function(xhr, status, error) {
+    $('#result').html('<p>An error ocurred: ' + error + '</p>');
+    }
+    });
 // estados para los toggles
 let estadoBotonProds=false;
 let estadoBotonComprs=false;
@@ -26,6 +44,7 @@ let maxStock = 0;
 let currentEstado;
 let pedidoIdParaBusqueda;
 let haypedidosenCarrito = false;
+let haypedidosSeleccionadoenCarrito = false;
 
 // chequeo inicial de autenticacion
 if(micCheck == false){
@@ -102,6 +121,14 @@ data: JSON.stringify({
 }),
 success: function(response) {
 console.log("compras: ",response);
+haypedidosSeleccionadoenCarrito = false;
+for(let objeto of response){
+    console.log(objeto.estado);
+    if(objeto.estado === "seleccionado"){
+        haypedidosSeleccionadoenCarrito = true;
+    }
+}
+console.log(haypedidosSeleccionadoenCarrito);
 if(response.length==0){
 $(`#contCompr .contComprs`).append(`
 <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
@@ -116,29 +143,56 @@ haypedidosenCarrito = false;
 let contadorTarj=0;
 response.forEach(function(obj){
     if(obj.estado === tipoACargar){
-        $(`#contCompr .contComprs`).append(`
-            <div id="compr${contadorTarj}" class="tarjetaP">
-            <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
-            <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
-            <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
-            <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-            <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-            <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-            <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-            <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-            <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
-            <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-            <div class="textoTarjeta">
-            <p name="titulo">Nombre: ${obj.producto}</p>
-            <p name="titulo">Cantidad: ${obj.stock}</p>
-            </div>
-            
-            </div>
-            `);
-            
-            $(`#compr${contadorTarj}`).addClass('fondo2');
-            
-            contadorTarj++;
+        if(tipoACargar === "pendiente"){
+            $(`#contCompr .contComprs`).append(`
+                <div id="compr${contadorTarj}" class="tarjetaP">
+                <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+                <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+                <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+                <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+                <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+                <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+                <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+                <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+                <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+                <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+                <div class="textoTarjeta">
+                <p name="titulo">Nombre: ${obj.producto}</p>
+                <p name="titulo">Codigo de pedido: ${obj.numeroHistoricoPedidos}</p>
+                </div>
+                
+                </div>
+                `);
+                
+                $(`#compr${contadorTarj}`).addClass('fondo2');
+                
+                contadorTarj++;
+        }else{
+            $(`#contCompr .contComprs`).append(`
+                <div id="compr${contadorTarj}" class="tarjetaP">
+                <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+                <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+                <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+                <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+                <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+                <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+                <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+                <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+                <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+                <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+                <div class="textoTarjeta">
+                <p name="titulo">Nombre: ${obj.producto}</p>
+                <p name="titulo">Cantidad: ${obj.stock}</p>
+                </div>
+                
+                </div>
+                `);
+                
+                $(`#compr${contadorTarj}`).addClass('fondo2');
+                
+                contadorTarj++;
+        }
+        
     }
 
 });
@@ -213,24 +267,6 @@ let precio=$('#precioMF').text();
 let stock=$('#stockMF').val();
 stock = Number(stock);
 let rutaImagen=$('#rutaImagenMF').attr('src');
-let numeroPedidoClienteHistorico;
-
-await $.ajax({    
-    type: 'POST',
-    url: 'http://localhost:5000/api/getnumpedidoscli',
-    contentType: 'application/json',
-    data: JSON.stringify({
-    "user":micCheck
-    }),
-    success: function(response) {
-    console.log("historico pedidos clientes : ",response);
-    numeroPedidoClienteHistorico = response.numero;
-    console.log("historico pedidos clientes numero : ",numeroPedidoClienteHistorico);
-    },
-    error: function(xhr, status, error) {
-    $('#result').html('<p>An error ocurred: ' + error + '</p>');
-    }
-    });
 
 await $.ajax({    
 type: 'POST',
@@ -336,9 +372,9 @@ $(document).on('click', '#modifTarjEliminar', async function() {
 $('#tarjetaModalP').modal('hide');
 let copiarObjeto;
 let idProducto = idPedidoPPP;
-if(currentEstado == "pendiente"){   // acciones diferentes dependiendo de si el pedido esta pendiente o aceptadp/rechazado
+if(currentEstado == "pendiente" || currentEstado == "seleccionado"){   // acciones diferentes dependiendo de si el pedido esta pendiente/seleccionado o aceptadp/rechazado
 copiarObjeto = true;
-
+console.log("cancelar/eliminar: ",idProducto,stockPendiente);
 await $.ajax({    
 type: 'POST',
 url: 'http://localhost:5000/api/devolverStock',
@@ -401,7 +437,14 @@ borrarContenedor("Prod");
 borrarContenedor("Compr");
 estadoBotonProds=false;
 estadoBotonComprs=false;
-cargarComprs(micCheck,"seleccionado");
+await cargarComprs(micCheck,"seleccionado");
+if(haypedidosenCarrito && ($('#aviso p').text()!=="Elementos en carrito")){
+    $('#sendCarritoButt').addClass('btn-primary');
+    $('#sendCarritoButt').css('cursor','auto');
+}else{
+    $('#sendCarritoButt').removeClass('btn-primary');
+    $('#sendCarritoButt').css('cursor','auto');
+}
 estadoBotonComprs=true;
 
 });
@@ -410,7 +453,9 @@ estadoBotonComprs=true;
 
 // funcionalidad toggle para boton de mostrar productos
 $('#prodButt').on('click',async function(){ 
-    $('#contBotComprar').css('display','none');
+    $('#sendCarritoButt').css('display','none');
+    $('#verPendientesButt').css('display','none');
+    $('#verHistorialButt').css('display','none');
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Productos');
 $('#contProd').css('display','flex');
@@ -432,21 +477,41 @@ estadoBotonProds=true;
 // funcionalidad toggle para boton de mostrar compras (carrito)
 $('#comprButt').on('click',async function(){ 
 $('#aviso').css('visibility','visible');
-$('#contBotComprar').css('display','flex');
 $('#aviso p').text('Elementos en carrito');
 $('#contProd').css('display','none');
 $('#contCompr').css('display','flex');
+$('#sendCarritoButt').css('display','flex');
+$('#verPendientesButt').css('display','flex');
+$('#verHistorialButt').css('display','flex');
+$('#sendCarritoButt').css('visibility','hidden');
+
 estadoBotonProds=false;
 estadoBotonPapelera=false;
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 if(estadoBotonComprs){
 borrarContenedor("Compr");
-
 estadoBotonComprs=false;
 }else{
 borrarContenedor("Compr");
-cargarComprs(micCheck,"seleccionado");
+await cargarComprs(micCheck,"seleccionado");
+if(haypedidosSeleccionadoenCarrito){
+    haypedidosenCarrito = true;
+    $('#sendCarritoButt').css('visibility','visible');
+    console.log("yes");
+}else{
+    $('#sendCarritoButt').css('visibility','hidden');
+    haypedidosenCarrito = false;
+    $(`#contCompr .contComprs`).append(`
+        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+        <p style="font-size: 3rem; margin: 0; color: white;">
+        No hay datos.
+        </p>
+        </div>
+        `);
+}
+
+
 estadoBotonComprs=true;
 }
 
@@ -454,15 +519,101 @@ estadoBotonComprs=true;
 
 // funcionalidad para boton de enviar carrito a pedidos
 $('#sendCarritoButt').on('click',async function(){ 
+    if ($('.contComprs').is(':empty')) {
+        haypedidosenCarrito = false;
+        $(`#contCompr .contComprs`).append(`
+            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <p style="font-size: 3rem; margin: 0; color: white;">
+            No hay datos.
+            </p>
+            </div>
+            `);
+    }else{
+        haypedidosenCarrito = true;
+    }
+    
     if(haypedidosenCarrito){
-        FUNCION PARA CAMBIAR ESTADO DE SELECCIONADO A PENDIENTE, crear contenedor para pedidos pendientes que muestre pedidos pendientes
-        borrarContenedor("Compr");
-        cargarComprs(micCheck,"seleccionado");
-        estadoBotonComprs=true;
+        console.log("historic num peds","historic: ",numeroPedidoClienteHistorico,"miccheck: ",micCheck);
+        //FUNCION PARA CAMBIAR ESTADO DE SELECCIONADO A PENDIENTE, crear contenedor para pedidos pendientes que muestre pedidos pendientes
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/cambiarEstadoAll',
+            contentType: 'application/json',
+            data: JSON.stringify({
+            "estado":"pendiente",
+            "username":micCheck,
+            "idkey": "numeroHistoricoPedidos",
+            "idvalue": numeroPedidoClienteHistorico,
+            "coleccOrigen": "creds"
+            }),
+            success: function(response) {
+            console.log(response);
+            },
+            error: function(xhr, status, error) {
+            $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+            });
+        
+        
+        await $.ajax({    
+            type: 'POST',
+            url: 'http://localhost:5000/api/setUndGetnumpedidoscli',
+            contentType: 'application/json',
+            data: JSON.stringify({
+            "user":micCheck
+            }),
+            success: function(response) {
+            numeroPedidoClienteHistorico = response.numero;
+            console.log("historico pedidos clientes numero post ajax : ",numeroPedidoClienteHistorico);
+            },
+            error: function(xhr, status, error) {
+            $('#result').html('<p>An error ocurred: ' + error + '</p>');
+            }
+            });
+
+
+            borrarContenedor("Compr");
+            cargarComprs(micCheck,"seleccionado");
+            console.log("ratatata : ",haypedidosSeleccionadoenCarrito);
+            if(haypedidosSeleccionadoenCarrito){
+                haypedidosenCarrito = true;
+                $('#sendCarritoButt').css('visibility','visible');
+                console.log("yes");
+            }else{
+                $('#sendCarritoButt').css('visibility','hidden');
+                haypedidosenCarrito = false;
+                console.log("no");
+                $(`#contCompr .contComprs`).append(`
+                    <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                    <p style="font-size: 3rem; margin: 0; color: white;">
+                    No hay datos.
+                    </p>
+                    </div>
+                    `);
+            }
+            estadoBotonComprs=false;
         
     }
     
-    
+
+    });
+
+// funcionalidad para boton de ver pedidos pendientes
+$('#verPendientesButt').on('click',async function(){ 
+    $('#sendCarritoButt').css('visibility','hidden');
+    $('#aviso p').text('Pedidos pendientes');
+    borrarContenedor("Compr");
+    cargarComprs(micCheck,"pendiente");
+    borrarContenedor("Compr");
+    estadoBotonComprs=false;
+    });
+
+// funcionalidad para boton de ver historial de pedidos
+$('#verHistorialButt').on('click',async function(){ 
+    $('#sendCarritoButt').css('visibility','hidden');
+    $('#aviso p').text('Historial de pedidos');
+    borrarContenedor("Compr");
+    //cargarComprs(micCheck,"pendiente"); funcion para VER HISTORIAL DEL USER
     });
 
 // para volver al login
