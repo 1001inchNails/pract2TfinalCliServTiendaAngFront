@@ -1,5 +1,5 @@
 cambiar como cargan las tarjetaP en admin
-
+quitar tambien toggles en admin
 
 cambiar css menus modificacion y maximizado y compra
 readme
