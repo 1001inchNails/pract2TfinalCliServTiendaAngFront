@@ -48,6 +48,21 @@ await new Promise(resolve => setTimeout(resolve, 250));
 window.location.href = "index.html"; 
 }
 
+////////////////////////////////////////////////////////
+/* Carga inicial de tienda*/
+$('#contBothistoric').css('display','none');
+$('#sendCarritoButt').css('display','none');
+$('#verPendientesButt').css('display','none');
+$('#verHistorialButt').css('display','none');
+$('#aviso').css('visibility','visible');
+$('#aviso p').text('Productos');
+$('#contProd').css('display','flex');
+$('#contCompr').css('display','none');
+borrarContenedor("Prod");
+borrarContenedor("Compr");
+cargarProds();
+////////////////////////////////////////////////////////
+
 // vaciado de contenedores segun tipo
 function borrarContenedor(tipo) { 
 $(`#cont${tipo} .cont${tipo}s`).empty();
