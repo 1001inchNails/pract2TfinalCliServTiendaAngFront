@@ -70,16 +70,16 @@ html body div.container-fluid div#menu div.d-flex.justify-content-evenly.mb-3.pe
 box-shadow: 8px 8px 2px 1px rgba(21, 21, 37, 0.2);
 font-size: larger;
 }
-html body div.container-fluid div.kanban-board .kanban-column div button{
+html body div.container-fluid div.tienda-board .tienda-column div button{
 font-size: x-large;
 }
-.kanban-board {
+.tienda-board {
 display: flex;
 flex-wrap: wrap;
 gap: 1rem;
 padding: 1rem;
 }
-.kanban-column {
+.tienda-column {
 flex: 1;
 min-width: 250px;
 background-color: transparent;
@@ -88,7 +88,7 @@ display: flex;
 flex-direction: column;
 gap: 20px;
 }
-.kanban-card {
+.tienda-card {
 background-color: white;
 border-radius: 4px;
 padding: 0.75rem;
@@ -97,15 +97,15 @@ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 cursor: pointer;
 transition: transform 0.2s;
 }
-.kanban-card:hover {
+.tienda-card:hover {
 transform: translateY(-2px);
 }
-.kanban-card h3 {
+.tienda-card h3 {
 font-size: 1rem;
 margin-bottom: 0.5rem;
 color: #555;
 }
-.kanban-card p {
+.tienda-card p {
 font-size: 0.875rem;
 color: #777;
 }
@@ -176,7 +176,7 @@ background-color: rgb(177, 110, 157);
 .fondoReservas{
 background-color: rgb(177, 167, 110);
 }
-html body div.container-fluid div.kanban-board div#contStat div.contStats div.colab p,html body div.container-fluid div.kanban-board div#contStat div.contStats div.propias p{
+html body div.container-fluid div.tienda-board div#contStat div.contStats div.colab p,html body div.container-fluid div.tienda-board div#contStat div.contStats div.propias p{
 font-size: 30px;
 }
 .tarjeta, .tarjetaH, .tarjetaP, .tarjetaR{
@@ -413,7 +413,7 @@ gap: 10px;
 #contPapel .contPapels .textoTarjeta p{
 margin: 0;
 }
-html body div.container-fluid div.kanban-board div#contPapel.kanban-column div.historialMenus .tarjetaA{
+html body div.container-fluid div.tienda-board div#contPapel.tienda-column div.historialMenus .tarjetaA{
 width: 300px;
 font-size: 25px;
 font-weight: normal;
@@ -422,7 +422,7 @@ flex-direction: column;
 gap: 20px;
 padding: 10px;
 }
-html body div.container-fluid div.kanban-board div#contPapel.kanban-column div.historialPedidos .tarjetaPP{
+html body div.container-fluid div.tienda-board div#contPapel.tienda-column div.historialPedidos .tarjetaPP{
 width: 300px;
 font-size: 25px;
 font-weight: normal;
@@ -431,7 +431,7 @@ flex-direction: column;
 gap: 20px;
 padding: 10px;
 }
-html body div.container-fluid div.kanban-board div#contPapel.kanban-column div.historialReservas .tarjetaRR{
+html body div.container-fluid div.tienda-board div#contPapel.tienda-column div.historialReservas .tarjetaRR{
 width: 300px;
 font-size: 25px;
 font-weight: normal;
