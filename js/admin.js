@@ -478,6 +478,7 @@ estadoBotonComprs=true;
 }
 });
 
+// funcionalidad toggle para boton de mostrar historial
 $('#verDeleted').on('click',async function(){
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Historial de pedidos');

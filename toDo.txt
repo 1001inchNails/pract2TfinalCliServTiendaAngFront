@@ -1,8 +1,11 @@
+cambiar como cargan las tarjetaP en admin
+
+
 cambiar css menus modificacion y maximizado y compra
 readme
 
-
-HACER CARRITO, al añadir al carrito resta el stock, carrito debe caducar y restaurar stock cuando caduca
+comprobar que en client todos los eliminar rechazar etc devuelven stock
+HACER CARRITO, al añadir al carrito resta el stock, carrito debe caducar y restaurar stock cuando caduca (si da la virada)
 
 
 revisar comments, estilar pa izquierda y esas movidas

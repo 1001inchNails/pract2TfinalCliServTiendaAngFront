@@ -35,10 +35,17 @@
         </div>
 
         <div id="contBotComprar" class="w-100">
-            <button id="sendCarritoButt" type="button" class="btn btn-primary">Comprar</button>
+            <button id="sendCarritoButt" type="button" class="btn btn-success">Comprar</button>
             <button id="verPendientesButt" type="button" class="btn btn-primary">Pendientes</button>
             <button id="verHistorialButt" type="button" class="btn btn-primary">Historial</button>
+            <div id="contBothistoric" class="w-100">
+                <button id="completadoButt" type="button" class="btn btn-info">Completados</button>
+                <button id="rechazadoButt" type="button" class="btn btn-info">Rechazados</button>
+                <button id="canceladoButt" type="button" class="btn btn-info">Cancelados</button>
+                <button id="seleccionadoButt" type="button" class="btn btn-info">Seleccionados</button>
+            </div>
         </div>
+        
         <div id="contCompr" class="kanban-column">
             
             <div class="contComprs"></div>
@@ -135,6 +142,7 @@
 
                     <div class="textoMaximTarj">
                         <p id="idPedidoHistoricoP"></p>
+                        <p id="idPedidoP"></p>
                         <p id="idProductoP"></p>
                         <p id="productoP"></p>
                         <p id="descripcionP"></p>

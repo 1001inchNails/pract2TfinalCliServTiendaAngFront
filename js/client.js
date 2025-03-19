@@ -43,8 +43,8 @@ let tarjetaActual;
 let maxStock = 0;
 let currentEstado;
 let pedidoIdParaBusqueda;
-let haypedidosenCarrito = false;
-let haypedidosSeleccionadoenCarrito = false;
+let haypedidosenCarrito = false;// borrar?
+let haypedidosSeleccionadoenCarrito = false;// borrar?
 
 // chequeo inicial de autenticacion
 if(micCheck == false){
@@ -351,9 +351,9 @@ pedidoIdParaBusqueda = datosTarjeta.tarjidunica;
 let totalP = Number(datosTarjeta.tarjprecio) * Number(datosTarjeta.tarjstock);
 $('#rutaImagenPP').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
 $('#rutaImagenPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
-$('#idPedidoP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
-$('#idPedidoHistoricoP').text('Codigo de pedido: ' + datosTarjeta.tarjidunica);
-$('#idProductoP').text('Id de producto: ' + datosTarjeta.tarjidunicaProductoHistorico);
+//$('#idPedidoP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
+$('#idProductoP ').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
+$('#idPedidoHistoricoP').text('Codigo de pedido: ' + datosTarjeta.tarjidunicaProductoHistorico);
 idPedidoPPP = datosTarjeta.tarjidunicaProducto;
 $('#productoP').text('Producto: ' + datosTarjeta.tarjproducto);
 $('#descripcionP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
@@ -437,13 +437,29 @@ borrarContenedor("Prod");
 borrarContenedor("Compr");
 estadoBotonProds=false;
 estadoBotonComprs=false;
-await cargarComprs(micCheck,"seleccionado");
-if(haypedidosenCarrito && ($('#aviso p').text()!=="Elementos en carrito")){
-    $('#sendCarritoButt').addClass('btn-primary');
-    $('#sendCarritoButt').css('cursor','auto');
-}else{
-    $('#sendCarritoButt').removeClass('btn-primary');
-    $('#sendCarritoButt').css('cursor','auto');
+if($('#aviso p').text()=="Elementos en carrito"){
+    await cargarComprs(micCheck,"seleccionado");
+    if($('#contCompr .contComprs').children(':visible').length>0){
+        $('#sendCarritoButt').css('visibility','visible');
+        console.log("visible");
+    }else{
+        $('#sendCarritoButt').css('visibility','hidden');
+        console.log("invisible");
+    }
+}
+else if($('#aviso p').text()=="Pedidos pendientes"){
+    await cargarComprs(micCheck,"pendiente");
+}
+
+
+if ($('#contCompr .contComprs').children(':visible').length == 0) {
+    $(`#contCompr .contComprs`).append(`
+        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+        <p style="font-size: 3rem; margin: 0; color: white;">
+        No hay datos.
+        </p>
+        </div>
+        `);
 }
 estadoBotonComprs=true;
 
@@ -453,6 +469,7 @@ estadoBotonComprs=true;
 
 // funcionalidad toggle para boton de mostrar productos
 $('#prodButt').on('click',async function(){ 
+    $('#contBothistoric').css('display','none');
     $('#sendCarritoButt').css('display','none');
     $('#verPendientesButt').css('display','none');
     $('#verHistorialButt').css('display','none');
@@ -460,22 +477,14 @@ $('#aviso').css('visibility','visible');
 $('#aviso p').text('Productos');
 $('#contProd').css('display','flex');
 $('#contCompr').css('display','none');
-estadoBotonComprs=false;
-estadoBotonPapelera=false;
 borrarContenedor("Prod");
 borrarContenedor("Compr");
-if(estadoBotonProds){
-borrarContenedor("Prod");
-estadoBotonProds=false;
-}else{
-borrarContenedor("Prod");
 cargarProds();
-estadoBotonProds=true;
-}
 });
 
 // funcionalidad toggle para boton de mostrar compras (carrito)
 $('#comprButt').on('click',async function(){ 
+    $('#contBothistoric').css('display','none');
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Elementos en carrito');
 $('#contProd').css('display','none');
@@ -485,23 +494,15 @@ $('#verPendientesButt').css('display','flex');
 $('#verHistorialButt').css('display','flex');
 $('#sendCarritoButt').css('visibility','hidden');
 
-estadoBotonProds=false;
-estadoBotonPapelera=false;
 borrarContenedor("Prod");
 borrarContenedor("Compr");
-if(estadoBotonComprs){
-borrarContenedor("Compr");
-estadoBotonComprs=false;
-}else{
-borrarContenedor("Compr");
+
 await cargarComprs(micCheck,"seleccionado");
-if(haypedidosSeleccionadoenCarrito){
-    haypedidosenCarrito = true;
+if($('#contCompr .contComprs').children(':visible').length>0){
     $('#sendCarritoButt').css('visibility','visible');
     console.log("yes");
 }else{
     $('#sendCarritoButt').css('visibility','hidden');
-    haypedidosenCarrito = false;
     $(`#contCompr .contComprs`).append(`
         <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
         <p style="font-size: 3rem; margin: 0; color: white;">
@@ -511,30 +512,12 @@ if(haypedidosSeleccionadoenCarrito){
         `);
 }
 
-
-estadoBotonComprs=true;
-}
-
 });
 
 // funcionalidad para boton de enviar carrito a pedidos
 $('#sendCarritoButt').on('click',async function(){ 
-    if ($('.contComprs').is(':empty')) {
-        haypedidosenCarrito = false;
-        $(`#contCompr .contComprs`).append(`
-            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-            <p style="font-size: 3rem; margin: 0; color: white;">
-            No hay datos.
-            </p>
-            </div>
-            `);
-    }else{
-        haypedidosenCarrito = true;
-    }
-    
-    if(haypedidosenCarrito){
-        console.log("historic num peds","historic: ",numeroPedidoClienteHistorico,"miccheck: ",micCheck);
-        //FUNCION PARA CAMBIAR ESTADO DE SELECCIONADO A PENDIENTE, crear contenedor para pedidos pendientes que muestre pedidos pendientes
+    $('#contBothistoric').css('display','none');
+    if($('#contCompr .contComprs').children(':visible').length>0){
         await $.ajax({    
             type: 'POST',
             url: 'http://localhost:5000/api/cambiarEstadoAll',
@@ -565,47 +548,51 @@ $('#sendCarritoButt').on('click',async function(){
             success: function(response) {
             numeroPedidoClienteHistorico = response.numero;
             console.log("historico pedidos clientes numero post ajax : ",numeroPedidoClienteHistorico);
+            borrarContenedor("Compr");
+            $(`#contCompr .contComprs`).append(`
+                <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                <p style="font-size: 3rem; margin: 0; color: white;">
+                No hay datos.
+                </p>
+                </div>
+                `);
+                estadoBotonComprs=false;
             },
             error: function(xhr, status, error) {
             $('#result').html('<p>An error ocurred: ' + error + '</p>');
             }
-            });
-
-
-            borrarContenedor("Compr");
-            cargarComprs(micCheck,"seleccionado");
-            console.log("ratatata : ",haypedidosSeleccionadoenCarrito);
-            if(haypedidosSeleccionadoenCarrito){
-                haypedidosenCarrito = true;
-                $('#sendCarritoButt').css('visibility','visible');
-                console.log("yes");
-            }else{
-                $('#sendCarritoButt').css('visibility','hidden');
-                haypedidosenCarrito = false;
-                console.log("no");
-                $(`#contCompr .contComprs`).append(`
-                    <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-                    <p style="font-size: 3rem; margin: 0; color: white;">
-                    No hay datos.
-                    </p>
-                    </div>
-                    `);
-            }
-            estadoBotonComprs=false;
-        
+            });         
+    }
+    if ($('#contCompr .contComprs').children(':visible').length == 0) {
+        $(`#contCompr .contComprs`).append(`
+            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <p style="font-size: 3rem; margin: 0; color: white;">
+            No hay datos.
+            </p>
+            </div>
+            `);
     }
     
 
-    });
+});
 
 // funcionalidad para boton de ver pedidos pendientes
 $('#verPendientesButt').on('click',async function(){ 
+    $('#contBothistoric').css('display','none');
     $('#sendCarritoButt').css('visibility','hidden');
     $('#aviso p').text('Pedidos pendientes');
     borrarContenedor("Compr");
     cargarComprs(micCheck,"pendiente");
-    borrarContenedor("Compr");
     estadoBotonComprs=false;
+    if ($('#contCompr .contComprs').children(':visible').length == 0) {
+        $(`#contCompr .contComprs`).append(`
+            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <p style="font-size: 3rem; margin: 0; color: white;">
+            No hay datos.
+            </p>
+            </div>
+            `);
+    }
     });
 
 // funcionalidad para boton de ver historial de pedidos
@@ -613,8 +600,153 @@ $('#verHistorialButt').on('click',async function(){
     $('#sendCarritoButt').css('visibility','hidden');
     $('#aviso p').text('Historial de pedidos');
     borrarContenedor("Compr");
-    //cargarComprs(micCheck,"pendiente"); funcion para VER HISTORIAL DEL USER
+    await $.ajax({    
+        type: 'POST',
+        url: 'http://localhost:5000/api/histconuser',
+        contentType: 'application/json',
+        data: JSON.stringify({
+        "user":micCheck
+        }),
+        success: function(response) {
+        console.log(response);
+        if(response.length == 0){
+            $(`#contCompr .contComprs`).append(`
+                <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                <p style="font-size: 3rem; margin: 0; color: white;">
+                No hay datos.
+                </p>
+                </div>
+                `);
+        }else{
+            let contadorTarj=0;
+            response.forEach(function(obj){
+                        $(`#contCompr .contComprs`).append(`
+                            <div id="compr${contadorTarj}" class="tarjetaP">
+                            <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+                            <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+                            <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+                            <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+                            <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+                            <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+                            <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+                            <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+                            <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+                            <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+                            <div class="textoTarjeta">
+                            <p name="titulo">Nombre: ${obj.producto}</p>
+                            <p name="titulo">Cantidad: ${obj.stock}</p>
+                            </div>
+                            
+                            </div>
+                            `);
+                            
+                            $(`#compr${contadorTarj}`).addClass('fondo2');
+                            
+                            contadorTarj++;                      
+            });
+            $('#contBothistoric').css('display','flex');
+        }
+        },
+        error: function(xhr, status, error) {
+        $('#result').html('<p>An error ocurred: ' + error + '</p>');
+        }
+        });
+        if ($('#contCompr .contComprs').children(':visible').length == 0) {
+            $(`#contCompr .contComprs`).append(`
+                <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                <p style="font-size: 3rem; margin: 0; color: white;">
+                No hay datos.
+                </p>
+                </div>
+                `);
+        }
+});
+
+$('#completadoButt').on('click',async function(){
+    $('#contCompr .contComprs').children('.tarjetaP').hide();
+    $('#contCompr .contComprs').children('.tarjetaP').each(function() {
+        const hasMatchingInput = $(this).find('input').filter(function() {
+            return $(this).val() === "completado";
+        }).length > 0;
+
+        if (hasMatchingInput) {
+            $(this).show();
+        }
     });
+    if ($('#contCompr .contComprs').children(':visible').length == 0) {
+        $(`#contCompr .contComprs`).append(`
+            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <p style="font-size: 3rem; margin: 0; color: white;">
+            No hay datos.
+            </p>
+            </div>
+            `);
+    }
+});
+
+$('#rechazadoButt').on('click',async function(){
+    $('#contCompr .contComprs').children('.tarjetaP').hide();
+    $('#contCompr .contComprs').children('.tarjetaP').each(function() {
+        const hasMatchingInput = $(this).find('input').filter(function() {
+            return $(this).val() === "rechazado";
+        }).length > 0;
+
+        if (hasMatchingInput) {
+            $(this).show();
+        }
+    });
+    if ($('#contCompr .contComprs').children(':visible').length == 0) {
+        $(`#contCompr .contComprs`).append(`
+            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <p style="font-size: 3rem; margin: 0; color: white;">
+            No hay datos.
+            </p>
+            </div>
+            `);
+    }
+});
+$('#canceladoButt').on('click',async function(){
+    $('#contCompr .contComprs').children('.tarjetaP').hide();
+    $('#contCompr .contComprs').children('.tarjetaP').each(function() {
+        const hasMatchingInput = $(this).find('input').filter(function() {
+            return $(this).val() === "cancelado";
+        }).length > 0;
+
+        if (hasMatchingInput) {
+            $(this).show();
+        }
+    });
+    if ($('#contCompr .contComprs').children(':visible').length == 0) {
+        $(`#contCompr .contComprs`).append(`
+            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <p style="font-size: 3rem; margin: 0; color: white;">
+            No hay datos.
+            </p>
+            </div>
+            `);
+    }
+});
+$('#seleccionadoButt').on('click',async function(){
+    $('#contCompr .contComprs').children('.tarjetaP').hide();
+    $('#contCompr .contComprs').children('.tarjetaP').each(function() {
+        const hasMatchingInput = $(this).find('input').filter(function() {
+            return $(this).val() === "seleccionado";
+        }).length > 0;
+
+        if (hasMatchingInput) {
+            $(this).show();
+        }
+    });
+    if ($('#contCompr .contComprs').children(':visible').length == 0) {
+        $(`#contCompr .contComprs`).append(`
+            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <p style="font-size: 3rem; margin: 0; color: white;">
+            No hay datos.
+            </p>
+            </div>
+            `);
+    }
+});
 
 // para volver al login
 $('#cerrarSesion').on('click',async function(){
