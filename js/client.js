@@ -21,31 +21,26 @@ window.location.href = "index.html";
 $('#nombreUser').text(micCheck);
 
 await $.ajax({    
-    type: 'POST',
-    url: 'http://localhost:5000/api/getnumpedidoscli',
-    contentType: 'application/json',
-    data: JSON.stringify({
-    "user":micCheck
-    }),
-    success: function(response) {
-    console.log("historico pedidos clientes : ",response);
-    numeroPedidoClienteHistorico = response.numero;
-    console.log("historico pedidos clientes numero : ",numeroPedidoClienteHistorico);
-    },
-    error: function(xhr, status, error) {
-    $('#result').html('<p>An error ocurred: ' + error + '</p>');
-    }
-    });
-// estados para los toggles
-let estadoBotonProds=false;
-let estadoBotonComprs=false;
+type: 'POST',
+url: 'http://localhost:5000/api/getnumpedidoscli',
+contentType: 'application/json',
+data: JSON.stringify({
+"user":micCheck
+}),
+success: function(response) {
+console.log("historico pedidos clientes : ",response);
+numeroPedidoClienteHistorico = response.numero;
+console.log("historico pedidos clientes numero : ",numeroPedidoClienteHistorico);
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
 
 let tarjetaActual;
 let maxStock = 0;
 let currentEstado;
 let pedidoIdParaBusqueda;
-let haypedidosenCarrito = false;// borrar?
-let haypedidosSeleccionadoenCarrito = false;// borrar?
 
 // chequeo inicial de autenticacion
 if(micCheck == false){
@@ -122,105 +117,88 @@ data: JSON.stringify({
 }),
 success: function(response) {
 console.log("compras: ",response);
-haypedidosSeleccionadoenCarrito = false;
-for(let objeto of response){
-    console.log(objeto.estado);
-    if(objeto.estado === "seleccionado"){
-        haypedidosSeleccionadoenCarrito = true;
-    }
-}
-console.log(haypedidosSeleccionadoenCarrito);
-if(response.length==0){
-$(`#contCompr .contComprs`).append(`
-<div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-<p style="font-size: 3rem; margin: 0; color: white;">
-No hay datos.
-</p>
-</div>
-`);
-haypedidosenCarrito = false;
-}else{
-    haypedidosenCarrito = true;
+if(response.length>0){
+
 let contadorTarj=0;
 response.forEach(function(obj){
-    if(obj.estado === tipoACargar){
-        if(tipoACargar === "pendiente"){
-            $(`#contCompr .contComprs`).append(`
-                <div id="compr${contadorTarj}" class="tarjetaP">
-                <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
-                <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
-                <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
-                <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-                <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-                <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-                <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-                <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-                <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
-                <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-                <div class="textoTarjeta">
-                <p name="titulo">Nombre: ${obj.producto}</p>
-                <p name="titulo">Codigo de pedido: ${obj.numeroHistoricoPedidos}</p>
-                </div>
-                
-                </div>
-                `);
-                
-                $(`#compr${contadorTarj}`).addClass('fondo2');
-                
-                contadorTarj++;
-        }
-        else if(tipoACargar === "seleccionado"){
-            $(`#contCompr .contComprs`).append(`
-                <div id="compr${contadorTarj}" class="tarjetaP">
-                <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
-                <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
-                <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
-                <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-                <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-                <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-                <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-                <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-                <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
-                <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-                <div class="textoTarjeta">
-                <p name="titulo">Nombre: ${obj.producto}</p>
-                <p name="titulo">Cantidad: ${obj.stock}</p>
-                </div>
-                
-                </div>
-                `);
-                
-                $(`#compr${contadorTarj}`).addClass('fondo2');
-                
-                contadorTarj++;
-        }
-        else{
-            $(`#contCompr .contComprs`).append(`
-                <div id="compr${contadorTarj}" class="tarjetaP">
-                <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
-                <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
-                <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
-                <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-                <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-                <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-                <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-                <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-                <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
-                <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-                <div class="textoTarjeta">
-                <p name="titulo">Nombre: ${obj.producto}</p>
-                <p name="titulo">Cantidad: ${obj.stock}</p>
-                </div>
-                
-                </div>
-                `);
-                
-                $(`#compr${contadorTarj}`).addClass('fondo2');
-                
-                contadorTarj++;
-        }
-        
-    }
+if(obj.estado === tipoACargar){
+if(tipoACargar === "pendiente"){
+$(`#contCompr .contComprs`).append(`
+<div id="compr${contadorTarj}" class="tarjetaP">
+<input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+<input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+<input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+<input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+<input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+<input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+<input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+<input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+<input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+<div class="textoTarjeta">
+<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">Codigo de pedido: ${obj.numeroHistoricoPedidos}</p>
+</div>
+
+</div>
+`);
+
+$(`#compr${contadorTarj}`).addClass('fondo2');
+
+contadorTarj++;
+}
+else if(tipoACargar === "seleccionado"){
+$(`#contCompr .contComprs`).append(`
+<div id="compr${contadorTarj}" class="tarjetaP">
+<input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+<input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+<input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+<input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+<input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+<input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+<input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+<input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+<input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+<div class="textoTarjeta">
+<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">Cantidad: ${obj.stock}</p>
+</div>
+
+</div>
+`);
+
+$(`#compr${contadorTarj}`).addClass('fondo2');
+
+contadorTarj++;
+}
+else{
+$(`#contCompr .contComprs`).append(`
+<div id="compr${contadorTarj}" class="tarjetaP">
+<input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+<input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+<input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+<input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+<input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+<input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+<input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+<input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+<input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+<div class="textoTarjeta">
+<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">Cantidad: ${obj.stock}</p>
+</div>
+
+</div>
+`);
+
+$(`#compr${contadorTarj}`).addClass('fondo2');
+
+contadorTarj++;
+}
+
+}
 
 });
 contadorTarj=0;
@@ -349,10 +327,7 @@ $('#tarjetaModal').modal('hide');
 
 borrarContenedor("Prod");
 borrarContenedor("Compr");
-estadoBotonProds=false;
-estadoBotonComprs=false;  
 cargarProds();
-estadoBotonProds=true;
 
 maxStock = 0;
 
@@ -361,6 +336,9 @@ maxStock = 0;
 // para mostrar las tarjetas maximizadas
 $(document).on('click', '.tarjetaP', function() { 
 $('#botoneraMaxP').css('display','flex');
+if($('#aviso').text() === 'Historial de pedidos'){
+$('#botoneraMaxP').css('display','none');
+}
 let tarjetaP=$(this);
 let datosTarjeta={
 tarjidunica: tarjetaP.find('.tarjidunica').attr('value'),
@@ -399,7 +377,7 @@ $(document).on('click', '#modifTarjEliminar', async function() {
 $('#tarjetaModalP').modal('hide');
 let copiarObjeto;
 let idProducto = idPedidoPPP;
-if(currentEstado == "pendiente" || currentEstado == "seleccionado"){   // acciones diferentes dependiendo de si el pedido esta pendiente/seleccionado o aceptadp/rechazado
+if(currentEstado == "pendiente" || currentEstado == "seleccionado"){   // acciones diferentes dependiendo de si el pedido esta pendiente/seleccionado o aceptado/rechazado
 copiarObjeto = true;
 console.log("cancelar/eliminar: ",idProducto,stockPendiente);
 await $.ajax({    
@@ -462,47 +440,46 @@ $('#result').html('<p>An error ocurred: ' + error + '</p>');
 
 borrarContenedor("Prod");
 borrarContenedor("Compr");
-estadoBotonProds=false;
-estadoBotonComprs=false;
 totalcomprasPedidos = 0;
 if($('#aviso p').text()=="Elementos en carrito"){
-    await cargarComprs(micCheck,"seleccionado");
-    if($('#contCompr .contComprs').children(':visible').length>0){
-        $('#sendCarritoButt').css('visibility','visible');
-        console.log("visible");
-    }else{
-        $('#sendCarritoButt').css('visibility','hidden');
-        console.log("invisible");
-    }
+await cargarComprs(micCheck,"seleccionado");
+if($('#contCompr .contComprs').children(':visible').length>0){
+$('#sendCarritoButt').css('visibility','visible');
+console.log("visible");
+}else{
+$('#sendCarritoButt').css('visibility','hidden');
+console.log("invisible");
+}
 }
 else if($('#aviso p').text()=="Pedidos pendientes"){
-    await cargarComprs(micCheck,"pendiente");
+await cargarComprs(micCheck,"pendiente");
 }
 if($('#contCompr .contComprs').children(':visible').length>0){
-    console.log("yes");
-    $('#contCompr .contComprs').find('div:visible').each(function() {
-        let valorUd = $(this).find('.tarjprecio');
-        let stock = $(this).find('.tarjstock');
+console.log("hay elementos");
+$('#contCompr .contComprs').find('div:visible').each(function() {
+let valorUd = $(this).find('.tarjprecio');
+let stock = $(this).find('.tarjstock');
 
-        if (valorUd.length && stock.length) {
-            valorUd = parseInt(valorUd.val());
-            stock = parseInt(stock.val());
+if (valorUd.length && stock.length) {
+valorUd = parseInt(valorUd.val());
+stock = parseInt(stock.val());
 
-            totalcomprasPedidos += valorUd*stock;
-        }
-    });
-    $('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
-    $('#totalcompra').css('visibility','visible');
+totalcomprasPedidos += valorUd*stock;
+}
+});
+$('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
+$('#totalcompra').css('visibility','visible');
 }
 
 if ($('#contCompr .contComprs').children(':visible').length == 0) {
-    $(`#contCompr .contComprs`).append(`
-        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-        <p style="font-size: 3rem; margin: 0; color: white;">
-        No hay datos.
-        </p>
-        </div>
-        `);
+$('#totalcompra').css('visibility','hidden');
+$(`#contCompr .contComprs`).append(`
+<div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
 }
 estadoBotonComprs=true;
 
@@ -512,10 +489,10 @@ estadoBotonComprs=true;
 
 // funcionalidad toggle para boton de mostrar productos
 $('#prodButt').on('click',async function(){ 
-    $('#contBothistoric').css('display','none');
-    $('#sendCarritoButt').css('display','none');
-    $('#verPendientesButt').css('display','none');
-    $('#verHistorialButt').css('display','none');
+$('#contBothistoric').css('display','none');
+$('#sendCarritoButt').css('display','none');
+$('#verPendientesButt').css('display','none');
+$('#verHistorialButt').css('display','none');
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Productos');
 $('#contProd').css('display','flex');
@@ -527,8 +504,8 @@ cargarProds();
 
 // funcionalidad toggle para boton de mostrar compras (carrito)
 $('#comprButt').on('click',async function(){ 
-    totalcomprasPedidos = 0;
-    $('#contBothistoric').css('display','none');
+totalcomprasPedidos = 0;
+$('#contBothistoric').css('display','none');
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Elementos en carrito');
 $('#contProd').css('display','none');
@@ -543,291 +520,293 @@ borrarContenedor("Compr");
 
 await cargarComprs(micCheck,"seleccionado");
 if($('#contCompr .contComprs').children(':visible').length>0){
-    $('#sendCarritoButt').css('visibility','visible');
-    console.log("yes");
-    $('#contCompr .contComprs').find('div:visible').each(function() {
-        let valorUd = $(this).find('.tarjprecio');
-        let stock = $(this).find('.tarjstock');
+$('#sendCarritoButt').css('visibility','visible');
+console.log("yes");
+$('#contCompr .contComprs').find('div:visible').each(function() {
+let valorUd = $(this).find('.tarjprecio');
+let stock = $(this).find('.tarjstock');
 
-        if (valorUd.length && stock.length) {
-            valorUd = parseInt(valorUd.val());
-            stock = parseInt(stock.val());
+if (valorUd.length && stock.length) {
+valorUd = parseInt(valorUd.val());
+stock = parseInt(stock.val());
 
-            totalcomprasPedidos += valorUd*stock;
-        }
-    });
-    $('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
-    $('#totalcompra').css('visibility','visible');
+totalcomprasPedidos += valorUd*stock;
+}
+});
+$('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
+$('#totalcompra').css('visibility','visible');
 }else{
-    $('#totalcompra').css('visibility','hidden');
-    $('#sendCarritoButt').css('visibility','hidden');
-    $(`#contCompr .contComprs`).append(`
-        <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-        <p style="font-size: 3rem; margin: 0; color: white;">
-        No hay datos.
-        </p>
-        </div>
-        `);
+$('#totalcompra').css('visibility','hidden');
+$('#sendCarritoButt').css('visibility','hidden');
+$(`#contCompr .contComprs`).append(`
+<div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
 }
 
 });
 
 // funcionalidad para boton de enviar carrito a pedidos
 $('#sendCarritoButt').on('click',async function(){ 
-    $('#contBothistoric').css('display','none');
-    if($('#contCompr .contComprs').children(':visible').length>0){
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/cambiarEstadoAll',
-            contentType: 'application/json',
-            data: JSON.stringify({
-            "estado":"pendiente",
-            "username":micCheck,
-            "idkey": "numeroHistoricoPedidos",
-            "idvalue": numeroPedidoClienteHistorico,
-            "coleccOrigen": "creds"
-            }),
-            success: function(response) {
-            console.log(response);
-            },
-            error: function(xhr, status, error) {
-            $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-            });
-        
-        
-        await $.ajax({    
-            type: 'POST',
-            url: 'http://localhost:5000/api/setUndGetnumpedidoscli',
-            contentType: 'application/json',
-            data: JSON.stringify({
-            "user":micCheck
-            }),
-            success: function(response) {
-            numeroPedidoClienteHistorico = response.numero;
-            console.log("historico pedidos clientes numero post ajax : ",numeroPedidoClienteHistorico);
-            borrarContenedor("Compr");
-            $('#sendCarritoButt').css('visibility','hidden');
-            $('#totalcompra').css('visibility','hidden');
-            $(`#contCompr .contComprs`).append(`
-                <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-                <p style="font-size: 3rem; margin: 0; color: white;">
-                No hay datos.
-                </p>
-                </div>
-                `);
-                estadoBotonComprs=false;
-            },
-            error: function(xhr, status, error) {
-            $('#result').html('<p>An error ocurred: ' + error + '</p>');
-            }
-            });         
-    }
-    
+$('#contBothistoric').css('display','none');
+if($('#contCompr .contComprs').children(':visible').length>0){
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/cambiarEstadoAll',
+contentType: 'application/json',
+data: JSON.stringify({
+"estado":"pendiente",
+"username":micCheck,
+"idkey": "numeroHistoricoPedidos",
+"idvalue": numeroPedidoClienteHistorico,
+"coleccOrigen": "creds"
+}),
+success: function(response) {
+console.log(response);
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+
+
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/setUndGetnumpedidoscli',
+contentType: 'application/json',
+data: JSON.stringify({
+"user":micCheck
+}),
+success: function(response) {
+numeroPedidoClienteHistorico = response.numero;
+console.log("historico pedidos clientes numero post ajax : ",numeroPedidoClienteHistorico);
+borrarContenedor("Compr");
+$('#sendCarritoButt').css('visibility','hidden');
+$('#totalcompra').css('visibility','hidden');
+$(`#contCompr .contComprs`).append(`
+<div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+estadoBotonComprs=false;
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});         
+}
+
 
 });
 
 // funcionalidad para boton de ver pedidos pendientes
 $('#verPendientesButt').on('click',async function(){ 
-    $('#totalcompra').css('visibility','hidden');
-    totalcomprasPedidos = 0;
-    $('#contBothistoric').css('display','none');
-    $('#sendCarritoButt').css('visibility','hidden');
-    $('#aviso p').text('Pedidos pendientes');
-    borrarContenedor("Compr");
-    await cargarComprs(micCheck,"pendiente");
-    if($('#contCompr .contComprs').children(':visible').length>0){
-        console.log("yes");
-        $('#contCompr .contComprs').find('div:visible').each(function() {
-            let valorUd = $(this).find('.tarjprecio');
-            let stock = $(this).find('.tarjstock');
-    
-            if (valorUd.length && stock.length) {
-                valorUd = parseInt(valorUd.val());
-                stock = parseInt(stock.val());
-    
-                totalcomprasPedidos += valorUd*stock;
-            }
-        });
-        $('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
-        $('#totalcompra').css('visibility','visible');
-    }else{
-        $('#totalcompra').css('visibility','hidden');
-        $('#sendCarritoButt').css('visibility','hidden');
-        $(`#contCompr .contComprs`).append(`
-            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-            <p style="font-size: 3rem; margin: 0; color: white;">
-            No hay datos.
-            </p>
-            </div>
-            `);
-    }
-    });
-    
-// funcionalidad para boton de ver historial de pedidos
-$('#verHistorialButt').on('click',async function(){ 
-    $('#totalcompra').css('visibility','hidden');
-    $('#sendCarritoButt').css('visibility','hidden');
-    $('#aviso p').text('Historial de pedidos');
-    borrarContenedor("Compr");
-    await $.ajax({    
-        type: 'POST',
-        url: 'http://localhost:5000/api/histconuser',
-        contentType: 'application/json',
-        data: JSON.stringify({
-        "user":micCheck
-        }),
-        success: function(response) {
-        console.log(response);
-        if(response.length == 0){
-            $(`#contCompr .contComprs`).append(`
-                <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-                <p style="font-size: 3rem; margin: 0; color: white;">
-                No hay datos.
-                </p>
-                </div>
-                `);
-        }else{
-            let contadorTarj=0;
-            response.forEach(function(obj){
-                        $(`#contCompr .contComprs`).append(`
-                            <div id="compr${contadorTarj}" class="tarjetaP">
-                            <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
-                            <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
-                            <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
-                            <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-                            <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-                            <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-                            <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-                            <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-                            <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
-                            <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-                            <div class="textoTarjeta">
-                            <p name="titulo">Nombre: ${obj.producto}</p>
-                            <p name="titulo">Cantidad: ${obj.stock}</p>
-                            </div>
-                            
-                            </div>
-                            `);
-                            
-                            $(`#compr${contadorTarj}`).addClass('fondo2');
-                            
-                            contadorTarj++;                      
-            });
-            $('#contBothistoric').css('display','flex');
-        }
-        },
-        error: function(xhr, status, error) {
-        $('#result').html('<p>An error ocurred: ' + error + '</p>');
-        }
-        });
-        if ($('#contCompr .contComprs').children(':visible').length == 0) {
-            $(`#contCompr .contComprs`).append(`
-                <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-                <p style="font-size: 3rem; margin: 0; color: white;">
-                No hay datos.
-                </p>
-                </div>
-                `);
-        }
+$('#totalcompra').css('visibility','hidden');
+totalcomprasPedidos = 0;
+$('#contBothistoric').css('display','none');
+$('#sendCarritoButt').css('visibility','hidden');
+$('#aviso p').text('Pedidos pendientes');
+borrarContenedor("Compr");
+await cargarComprs(micCheck,"pendiente");
+if($('#contCompr .contComprs').children(':visible').length>0){
+console.log("yes");
+$('#contCompr .contComprs').find('div:visible').each(function() {
+let valorUd = $(this).find('.tarjprecio');
+let stock = $(this).find('.tarjstock');
+
+if (valorUd.length && stock.length) {
+valorUd = parseInt(valorUd.val());
+stock = parseInt(stock.val());
+
+totalcomprasPedidos += valorUd*stock;
+}
+});
+$('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
+$('#totalcompra').css('visibility','visible');
+}else{
+$('#totalcompra').css('visibility','hidden');
+$('#sendCarritoButt').css('visibility','hidden');
+$(`#contCompr .contComprs`).append(`
+<div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}
 });
 
-$('#completadoButt').on('click',async function(){
-    const container = document.querySelector('#contCompr .contComprs');
-    const nopeDivs = container.querySelectorAll('div.nope');
-    nopeDivs.forEach(div => div.remove());
-    $('#contCompr .contComprs').children('.tarjetaP').hide();
-    $('#contCompr .contComprs').children('.tarjetaP').each(function() {
-        const hasMatchingInput = $(this).find('input').filter(function() {
-            return $(this).val() === "completado";
-        }).length > 0;
+// funcionalidad para boton de ver historial de pedidos
+$('#verHistorialButt').on('click',async function(){ 
+$('#totalcompra').css('visibility','hidden');
+$('#sendCarritoButt').css('visibility','hidden');
+$('#aviso p').text('Historial de pedidos');
+borrarContenedor("Compr");
+await $.ajax({    
+type: 'POST',
+url: 'http://localhost:5000/api/histconuser',
+contentType: 'application/json',
+data: JSON.stringify({
+"user":micCheck
+}),
+success: function(response) {
+console.log(response);
+if(response.length == 0){
+$(`#contCompr .contComprs`).append(`
+<div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}else{
+let contadorTarj=0;
+response.forEach(function(obj){
+$(`#contCompr .contComprs`).append(`
+    <div id="compr${contadorTarj}" class="tarjetaP">
+    <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+    <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+    <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+    <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+    <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+    <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+    <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+    <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+    <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+    <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+    <div class="textoTarjeta">
+    <p name="titulo">Nombre: ${obj.producto}</p>
+    <p name="titulo">Cantidad: ${obj.stock}</p>
+    </div>
+    
+    </div>
+    `);
+    
+    $(`#compr${contadorTarj}`).addClass('fondo2');
+    
+    contadorTarj++;                      
+});
+$('#contBothistoric').css('display','flex');
+}
+},
+error: function(xhr, status, error) {
+$('#result').html('<p>An error ocurred: ' + error + '</p>');
+}
+});
+if ($('#contCompr .contComprs').children(':visible').length == 0) {
+$(`#contCompr .contComprs`).append(`
+<div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}
+});
 
-        if (hasMatchingInput) {
-            $(this).show();
-        }
-    });
-    if ($('#contCompr .contComprs').children(':visible').length == 0) {
-        $(`#contCompr .contComprs`).append(`
-            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-            <p style="font-size: 3rem; margin: 0; color: white;">
-            No hay datos.
-            </p>
-            </div>
-            `);
-    }
+/* Botones de pestaña de historial*/
+
+$('#completadoButt').on('click',async function(){
+const container = document.querySelector('#contCompr .contComprs');
+const nopeDivs = container.querySelectorAll('div.nope');
+nopeDivs.forEach(div => div.remove());
+$('#contCompr .contComprs').children('.tarjetaP').hide();
+$('#contCompr .contComprs').children('.tarjetaP').each(function() {
+const hasMatchingInput = $(this).find('input').filter(function() {
+return $(this).val() === "completado";
+}).length > 0;
+
+if (hasMatchingInput) {
+$(this).show();
+}
+});
+if ($('#contCompr .contComprs').children(':visible').length == 0) {
+$(`#contCompr .contComprs`).append(`
+<div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}
 });
 
 $('#rechazadoButt').on('click',async function(){
-    const container = document.querySelector('#contCompr .contComprs');
-    const nopeDivs = container.querySelectorAll('div.nope');
-    nopeDivs.forEach(div => div.remove());
-    $('#contCompr .contComprs').children('.tarjetaP').hide();
-    $('#contCompr .contComprs').children('.tarjetaP').each(function() {
-        const hasMatchingInput = $(this).find('input').filter(function() {
-            return $(this).val() === "rechazado";
-        }).length > 0;
+const container = document.querySelector('#contCompr .contComprs');
+const nopeDivs = container.querySelectorAll('div.nope');
+nopeDivs.forEach(div => div.remove());
+$('#contCompr .contComprs').children('.tarjetaP').hide();
+$('#contCompr .contComprs').children('.tarjetaP').each(function() {
+const hasMatchingInput = $(this).find('input').filter(function() {
+return $(this).val() === "rechazado";
+}).length > 0;
 
-        if (hasMatchingInput) {
-            $(this).show();
-        }
-    });
-    if ($('#contCompr .contComprs').children(':visible').length == 0) {
-        $(`#contCompr .contComprs`).append(`
-            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-            <p style="font-size: 3rem; margin: 0; color: white;">
-            No hay datos.
-            </p>
-            </div>
-            `);
-    }
+if (hasMatchingInput) {
+$(this).show();
+}
+});
+if ($('#contCompr .contComprs').children(':visible').length == 0) {
+$(`#contCompr .contComprs`).append(`
+<div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}
 });
 $('#canceladoButt').on('click',async function(){
-    const container = document.querySelector('#contCompr .contComprs');
-    const nopeDivs = container.querySelectorAll('div.nope');
-    nopeDivs.forEach(div => div.remove());
-    $('#contCompr .contComprs').children('.tarjetaP').hide();
-    $('#contCompr .contComprs').children('.tarjetaP').each(function() {
-        const hasMatchingInput = $(this).find('input').filter(function() {
-            return $(this).val() === "cancelado";
-        }).length > 0;
+const container = document.querySelector('#contCompr .contComprs');
+const nopeDivs = container.querySelectorAll('div.nope');
+nopeDivs.forEach(div => div.remove());
+$('#contCompr .contComprs').children('.tarjetaP').hide();
+$('#contCompr .contComprs').children('.tarjetaP').each(function() {
+const hasMatchingInput = $(this).find('input').filter(function() {
+return $(this).val() === "cancelado";
+}).length > 0;
 
-        if (hasMatchingInput) {
-            $(this).show();
-        }
-    });
-    if ($('#contCompr .contComprs').children(':visible').length == 0) {
-        $(`#contCompr .contComprs`).append(`
-            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-            <p style="font-size: 3rem; margin: 0; color: white;">
-            No hay datos.
-            </p>
-            </div>
-            `);
-    }
+if (hasMatchingInput) {
+$(this).show();
+}
+});
+if ($('#contCompr .contComprs').children(':visible').length == 0) {
+$(`#contCompr .contComprs`).append(`
+<div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}
 });
 $('#seleccionadoButt').on('click',async function(){
-    const container = document.querySelector('#contCompr .contComprs');
-    const nopeDivs = container.querySelectorAll('div.nope');
-    nopeDivs.forEach(div => div.remove());
-    $('#contCompr .contComprs').children('.tarjetaP').hide();
-    $('#contCompr .contComprs').children('.tarjetaP').each(function() {
-        const hasMatchingInput = $(this).find('input').filter(function() {
-            return $(this).val() === "seleccionado";
-        }).length > 0;
+const container = document.querySelector('#contCompr .contComprs');
+const nopeDivs = container.querySelectorAll('div.nope');
+nopeDivs.forEach(div => div.remove());
+$('#contCompr .contComprs').children('.tarjetaP').hide();
+$('#contCompr .contComprs').children('.tarjetaP').each(function() {
+const hasMatchingInput = $(this).find('input').filter(function() {
+return $(this).val() === "seleccionado";
+}).length > 0;
 
-        if (hasMatchingInput) {
-            $(this).show();
-        }
-    });
-    if ($('#contCompr .contComprs').children(':visible').length == 0) {
-        $(`#contCompr .contComprs`).append(`
-            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-            <p style="font-size: 3rem; margin: 0; color: white;">
-            No hay datos.
-            </p>
-            </div>
-            `);
-    }
+if (hasMatchingInput) {
+$(this).show();
+}
+});
+if ($('#contCompr .contComprs').children(':visible').length == 0) {
+$(`#contCompr .contComprs`).append(`
+<div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+<p style="font-size: 3rem; margin: 0; color: white;">
+No hay datos.
+</p>
+</div>
+`);
+}
 });
 
 // para volver al login

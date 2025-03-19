@@ -35,7 +35,7 @@ flex-direction: column;
 background: rgba(0, 0, 0, 0.2); 
 }
 #totalcompra{
-    visibility: hidden;
+visibility: hidden;
 }
 .welcome {
 position: relative;
@@ -75,20 +75,20 @@ color: white;
 z-index: 1;
 }
 #contBotComprar{
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
+display: flex;
+flex-direction: row;
+gap: 5px;
 }
 #sendCarritoButt,#verPendientesButt,#verHistorialButt{
-    display: none;
+display: none;
 }
 #sendCarritoButt{
-    margin-right: 15px;
+margin-right: 15px;
 }
 #contBothistoric{
-    display: none;
-    margin-left: 15px;
-    gap: 5px;
+display: none;
+margin-left: 15px;
+gap: 5px;
 }
 #aviso{
 visibility: hidden;
@@ -317,11 +317,12 @@ left: 0;
 right: 0;
 bottom: 0;
 margin: auto;
+overflow: auto;
 }
 .modal-content {
 border-radius: 10px;
 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-background-color: #d8bfd8;
+background-color: #6e7a8a;
 padding: 20px;
 width: 100%;
 max-width: 600px;
@@ -339,6 +340,7 @@ background-color: #97a6e9;
 .tarjeta-detalle{
 display: flex;
 flex-direction: row;
+gap: 10px;
 }
 .textoMaximTarj{
 width: 50%;
@@ -359,7 +361,7 @@ color: #333;
 .tarjeta-detalle p {
 font-size: 16px;
 font-weight: bold;
-color: #555;
+color: white;
 margin-bottom: 8px;
 }
 #colaboradoresM {
@@ -379,6 +381,7 @@ border-radius: 5px;
 padding: 10px 20px;
 text-transform: uppercase;
 transition: all 0.3s ease;
+font-size: 15px;
 }
 #modifTarj:hover, #modifTarjH:hover,#modifTarjAcepH:hover,#modifTarjAcepP:hover {
 background-color: #138496;
@@ -553,20 +556,24 @@ width: 50%;
 max-width: 200px;
 }
 html body.modal-open div#tarjetaModal.modal.fade.show div#modalMaxi.modal-dialog div.modal-content div.modal-body div.tarjeta-detalle p{
-font-size: 25px;
+font-size: 20px;
 font-weight: normal;
+color: white;
 }
 html body.modal-open div#tarjetaModalH.modal.fade.show div#modalMaxiH.modal-dialog div.modal-content div.modal-body div.tarjeta-detalle p{
-font-size: 25px;
+font-size: 20px;
 font-weight: normal;
+color: white;
 }
 html body.modal-open div#tarjetaModalP.modal.fade.show div#modalMaxiP.modal-dialog div.modal-content div.modal-body div.tarjeta-detalle p{
-font-size: 25px;
+font-size: 20px;
 font-weight: normal;
+color: white;
 }
 html body.modal-open div#tarjetaModalR.modal.fade.show div#modalMaxiR.modal-dialog div.modal-content div.modal-body div.tarjeta-detalle p{
-font-size: 25px;
+font-size: 20px;
 font-weight: normal;
+color: white;
 }
 #estadoproyectoMF{
 background-color: #c1c8e7;

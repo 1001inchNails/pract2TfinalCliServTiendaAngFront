@@ -181,7 +181,7 @@ url: 'http://localhost:5000/api/comprsall',
 contentType: 'application/json',
 data:'',
 success: function(response) {
-console.log(response);
+console.log("response compras pendientes",response);
 if(response.length==0){
 $(`#contCompr .contComprs`).append(`
 <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
@@ -205,11 +205,10 @@ $(`#contCompr .contComprs`).append(`
 <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
 <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
 <input class="tarjuser" type="hidden" name="user" value="${obj.name}">
-<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
 <div class="textoTarjeta">
-<p name="tarjidunica">Id: ${obj.id}</p>
-<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="tarjidunica">Id Producto: ${obj.id}</p>
 <p name="titulo">Usuario: ${obj.name}</p>
+<p name="titulo">Lote: ${obj.numeroHistoricoPedidos}</p>
 </div>
 
 </div>
@@ -256,8 +255,6 @@ $('#descripcionM').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
 $('#precioM').text('Precio: ' + datosTarjeta.tarjprecio);
 $('#stockM').text('Stock: ' + datosTarjeta.tarjstock);
 
-
-
 tarjetaActual=[datosTarjeta];  // guardar datos de tarjeta actual para usar en el formulario de modificacion
 
 $('#tarjetaModal').modal('show');
@@ -274,7 +271,6 @@ $('#descripcionMF').val(tarjetaActual[0].tarjdescripcion);
 $('#precioMF').val(tarjetaActual[0].tarjprecio);
 $('#stockMF').val(tarjetaActual[0].tarjstock);
 $('#rutaImagenMF').val(tarjetaActual[0].tarjrutaImagen);
-
 });
 
 // cancelar modificacion de formulario (productos)
@@ -417,9 +413,9 @@ $('#tarjetaModalP').modal('show');
 
 /*            Botones            */
 
-// funcionalidad toggle para boton de mostrar productos
+// funcionalidad para boton de mostrar productos
 $('#prodButt').on('click',async function(){ 
-    $('#barraBusq').css('display','none');
+$('#barraBusq').css('display','none');
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Productos');
 $('#contPapel').css('display','none');
@@ -443,31 +439,29 @@ window.location.href = url;
 
 // barra busqueda historial
 $('#barraBusq').on('input', function() {
-    var buscar = $(this).val().toLowerCase(); // Get the search term and convert to lowercase
+var buscar = $(this).val().toLowerCase();
 
-    $('#contPapel .contPapels .tarjetaP').each(function() {
-        var encontrado = false;
+$('#contPapel .contPapels .tarjetaP').each(function() {
+var encontrado = false;
 
-        // Check each input within the current div
-        $(this).find('input').each(function() {
-            if ($(this).val().toLowerCase().includes(buscar)) {
-                encontrado = true;
-                return false; // Exit the inner loop if a match is found
-            }
-        });
-
-        // Show or hide the div based on whether a match was found
-        if (encontrado) {
-            $(this).show();
-        } else {
-            $(this).hide();
-        }
-    });
+$(this).find('input').each(function() {
+if ($(this).val().toLowerCase().includes(buscar)) {
+encontrado = true;
+return false;
+}
 });
 
-// funcionalidad toggle para boton de mostrar productos
+if (encontrado) {
+$(this).show();
+} else {
+$(this).hide();
+}
+});
+});
+
+// funcionalidad para boton de mostrar productos
 $('#comprButt').on('click',async function(){
-    $('#barraBusq').css('display','none'); 
+$('#barraBusq').css('display','none'); 
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Compras pendientes');
 $('#contPapel').css('display','none');
@@ -481,14 +475,14 @@ cargarComprsAll();
 
 });
 
-// funcionalidad toggle para boton de mostrar historial
+// funcionalidad para boton de mostrar historial
 $('#verDeleted').on('click',async function(){
-    $('#barraBusq').val('Introduzca busqueda por valor');
-    $('#barraBusq').css('display','flex');
-    $('#barraBusq').focus();
-    setTimeout(() => {
-        $('#barraBusq').select(); // Select the text in the input field
-    }, 10);
+$('#barraBusq').val('Introduzca busqueda por valor');
+$('#barraBusq').css('display','flex');
+$('#barraBusq').focus();
+setTimeout(() => {
+$('#barraBusq').select();   // necesita un minimo retraso para asegurar el select el 100% de las veces
+}, 10);
 
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Historial de pedidos');
@@ -616,7 +610,5 @@ error: function(xhr, status, error) {
 $('#result').html('<p>An error ocurred: ' + error + '</p>');
 }
 });
-
 });
-
 });
