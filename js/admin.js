@@ -18,8 +18,6 @@ window.location.href = "index.html";
 }
 console.log(micCheck);
 // estados para los toggles
-let estadoBotonProds=false;
-let estadoBotonComprs=false;
 let estadoBotonPapelera=false;
 
 // datos de procesado de tarjetas
@@ -80,11 +78,8 @@ $('#contCompr').css('display','none');
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 borrarContenedor("Papel");
-estadoBotonProds=false;
-estadoBotonComprs=false;  
 estadoBotonPapelera=false;
 cargarProds('prods','Prod');
-estadoBotonProds=true;
 
 },
 error: function(xhr, status, error) {
@@ -116,6 +111,7 @@ let contadorTarj=0;
 response.forEach(function(obj){
 $(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
 <div id="ped${contadorTarj}" class="tarjetaP">
+<input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
 <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
 <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
 <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
@@ -125,10 +121,9 @@ $(`#cont${prefijoContenedor} .cont${prefijoContenedor}s`).append(`
 <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
 <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
 <input class="tarjuser" type="hidden" name="user" value="${obj.username}">
-<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
 <div class="textoTarjeta">
 <p name="tarjidunica">Id: ${obj.id}</p>
-<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">Usuario: ${obj.username}</p>
 <p name="titulo">Estado: ${obj.estado}</p>
 </div>
 
@@ -200,6 +195,7 @@ let contadorTarj=0;
 response.forEach(function(obj){
 $(`#contCompr .contComprs`).append(`
 <div id="compr${contadorTarj}" class="tarjetaP">
+<input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
 <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
 <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
 <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
@@ -333,11 +329,8 @@ $('#tarjetaModal').modal('hide');
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 borrarContenedor("Papel");
-estadoBotonProds=false;
-estadoBotonComprs=false;  
 estadoBotonPapelera=false;
 cargarProds('prods','Prod');
-estadoBotonProds=true;
 });
 
 // borrado de tarjeta (producto)
@@ -372,11 +365,8 @@ $('#tarjetaModal').modal('hide');
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 borrarContenedor("Papel");
-estadoBotonProds=false;
-estadoBotonComprs=false;  
 estadoBotonPapelera=false;
 cargarProds('prods','Prod');
-estadoBotonProds=true;
 
 },
 error: function(xhr, status, error) {
@@ -393,6 +383,7 @@ $('#botoneraMaxP').css('display','none');
 }
 let tarjetaP=$(this);
 let datosTarjeta={
+tarjidunicaProductoHistorico: tarjetaP.find('.tarjidunicaProductoHistorico').attr('value'),
 tarjuser: tarjetaP.find('.tarjuser').attr('value'),
 tarjidunica: tarjetaP.find('.tarjidunica').attr('value'),
 tarjidunicaProducto: tarjetaP.find('.tarjidunicaProducto').attr('value'),
@@ -409,9 +400,10 @@ $('#rutaImagenPPP').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
 $('#userPPP').text('Usuario: ' + datosTarjeta.tarjuser);
 $('#idPedidoPPP').text('Id de pedido: ' + datosTarjeta.tarjidunica);
 $('#idProductoPPP').text('Id de producto: ' + datosTarjeta.tarjidunicaProducto);
+$('#idPedidoHistoricoP').text('Codigo de pedido: ' + datosTarjeta.tarjidunicaProductoHistorico);
 idPedidoPPP = datosTarjeta.tarjidunicaProducto;
 $('#productoPPP').text('Producto: ' + datosTarjeta.tarjproducto);
-$('#descripcionPPP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
+//$('#descripcionPPP').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
 $('#precioPPP').text('Precio: ' + datosTarjeta.tarjprecio);
 $('#stockPPP').text('Cantidad: ' + datosTarjeta.tarjstock);
 stockPendiente = Number(datosTarjeta.tarjstock);
@@ -427,24 +419,18 @@ $('#tarjetaModalP').modal('show');
 
 // funcionalidad toggle para boton de mostrar productos
 $('#prodButt').on('click',async function(){ 
+    $('#barraBusq').css('display','none');
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Productos');
 $('#contPapel').css('display','none');
 $('#contProd').css('display','flex');
 $('#contCompr').css('display','none');
-estadoBotonComprs=false;
 estadoBotonPapelera=false;
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 borrarContenedor("Papel");
-if(estadoBotonProds){
-borrarContenedor("Prod");
-estadoBotonProds=false;
-}else{
-borrarContenedor("Prod");
 cargarProds('prods','Prod');
-estadoBotonProds=true;
-}
+
 });
 
 // para volver al login
@@ -455,49 +441,68 @@ window.location.href = url;
 }, 1000);
 });
 
+// barra busqueda historial
+$('#barraBusq').on('input', function() {
+    var buscar = $(this).val().toLowerCase(); // Get the search term and convert to lowercase
+
+    $('#contPapel .contPapels .tarjetaP').each(function() {
+        var encontrado = false;
+
+        // Check each input within the current div
+        $(this).find('input').each(function() {
+            if ($(this).val().toLowerCase().includes(buscar)) {
+                encontrado = true;
+                return false; // Exit the inner loop if a match is found
+            }
+        });
+
+        // Show or hide the div based on whether a match was found
+        if (encontrado) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+});
+
 // funcionalidad toggle para boton de mostrar productos
-$('#comprButt').on('click',async function(){ 
+$('#comprButt').on('click',async function(){
+    $('#barraBusq').css('display','none'); 
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Compras pendientes');
 $('#contPapel').css('display','none');
 $('#contProd').css('display','none');
 $('#contCompr').css('display','flex');
-estadoBotonProds=false;
 estadoBotonPapelera=false;
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 borrarContenedor("Papel");
-if(estadoBotonComprs){
-borrarContenedor("Compr");
-
-estadoBotonComprs=false;
-}else{
-borrarContenedor("Compr");
 cargarComprsAll();
-estadoBotonComprs=true;
-}
+
 });
 
 // funcionalidad toggle para boton de mostrar historial
 $('#verDeleted').on('click',async function(){
+    $('#barraBusq').val('Introduzca busqueda por valor');
+    $('#barraBusq').css('display','flex');
+    $('#barraBusq').focus();
+    setTimeout(() => {
+        $('#barraBusq').select(); // Select the text in the input field
+    }, 10);
+
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Historial de pedidos');
+
 $('#contPapel').css('display','flex');
 $('#contProd').css('display','none');
 $('#contCompr').css('display','none');
-estadoBotonProds=false;
-estadoBotonComprs=false;
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 borrarContenedor("Papel");
-if(estadoBotonPapelera){
 borrarContenedor("Papel");
-estadoBotonPapelera=false;
-}else{
-borrarContenedor("Papel");
-cargarProds('hist','Papel');
 estadoBotonPapelera=true;
-}
+cargarProds('hist','Papel');
+
 });
 
 // aceptar pedido
@@ -535,13 +540,11 @@ data: JSON.stringify({
 success: function(response) {
 console.log(response);
 $('#tarjetaModalP').modal('hide');
-estadoBotonProds=false;
 estadoBotonPapelera=false;
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 borrarContenedor("Papel");
 cargarComprsAll();
-estadoBotonComprs=true;
 },
 error: function(xhr, status, error) {
 $('#result').html('<p>An error ocurred: ' + error + '</p>');
@@ -603,13 +606,11 @@ data: JSON.stringify({
 success: function(response) {
 console.log(response);
 $('#tarjetaModalP').modal('hide');
-estadoBotonProds=false;
 estadoBotonPapelera=false;
 borrarContenedor("Prod");
 borrarContenedor("Compr");
 borrarContenedor("Papel");
 cargarComprsAll();
-estadoBotonComprs=true;
 },
 error: function(xhr, status, error) {
 $('#result').html('<p>An error ocurred: ' + error + '</p>');

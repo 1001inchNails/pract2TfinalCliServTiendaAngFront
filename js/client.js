@@ -1,6 +1,7 @@
 $(document).ready(async function(){
 let micCheck;
 let numeroPedidoClienteHistorico;
+let totalcomprasPedidos = 0;
 // chequeo inicial de autorizacion
 const token = localStorage.getItem("jwt");
 if (!token) {
@@ -167,7 +168,33 @@ response.forEach(function(obj){
                 $(`#compr${contadorTarj}`).addClass('fondo2');
                 
                 contadorTarj++;
-        }else{
+        }
+        else if(tipoACargar === "seleccionado"){
+            $(`#contCompr .contComprs`).append(`
+                <div id="compr${contadorTarj}" class="tarjetaP">
+                <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+                <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+                <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+                <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+                <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+                <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+                <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+                <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+                <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+                <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+                <div class="textoTarjeta">
+                <p name="titulo">Nombre: ${obj.producto}</p>
+                <p name="titulo">Cantidad: ${obj.stock}</p>
+                </div>
+                
+                </div>
+                `);
+                
+                $(`#compr${contadorTarj}`).addClass('fondo2');
+                
+                contadorTarj++;
+        }
+        else{
             $(`#contCompr .contComprs`).append(`
                 <div id="compr${contadorTarj}" class="tarjetaP">
                 <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
@@ -437,6 +464,7 @@ borrarContenedor("Prod");
 borrarContenedor("Compr");
 estadoBotonProds=false;
 estadoBotonComprs=false;
+totalcomprasPedidos = 0;
 if($('#aviso p').text()=="Elementos en carrito"){
     await cargarComprs(micCheck,"seleccionado");
     if($('#contCompr .contComprs').children(':visible').length>0){
@@ -450,7 +478,22 @@ if($('#aviso p').text()=="Elementos en carrito"){
 else if($('#aviso p').text()=="Pedidos pendientes"){
     await cargarComprs(micCheck,"pendiente");
 }
+if($('#contCompr .contComprs').children(':visible').length>0){
+    console.log("yes");
+    $('#contCompr .contComprs').find('div:visible').each(function() {
+        let valorUd = $(this).find('.tarjprecio');
+        let stock = $(this).find('.tarjstock');
 
+        if (valorUd.length && stock.length) {
+            valorUd = parseInt(valorUd.val());
+            stock = parseInt(stock.val());
+
+            totalcomprasPedidos += valorUd*stock;
+        }
+    });
+    $('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
+    $('#totalcompra').css('visibility','visible');
+}
 
 if ($('#contCompr .contComprs').children(':visible').length == 0) {
     $(`#contCompr .contComprs`).append(`
@@ -484,6 +527,7 @@ cargarProds();
 
 // funcionalidad toggle para boton de mostrar compras (carrito)
 $('#comprButt').on('click',async function(){ 
+    totalcomprasPedidos = 0;
     $('#contBothistoric').css('display','none');
 $('#aviso').css('visibility','visible');
 $('#aviso p').text('Elementos en carrito');
@@ -501,7 +545,21 @@ await cargarComprs(micCheck,"seleccionado");
 if($('#contCompr .contComprs').children(':visible').length>0){
     $('#sendCarritoButt').css('visibility','visible');
     console.log("yes");
+    $('#contCompr .contComprs').find('div:visible').each(function() {
+        let valorUd = $(this).find('.tarjprecio');
+        let stock = $(this).find('.tarjstock');
+
+        if (valorUd.length && stock.length) {
+            valorUd = parseInt(valorUd.val());
+            stock = parseInt(stock.val());
+
+            totalcomprasPedidos += valorUd*stock;
+        }
+    });
+    $('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
+    $('#totalcompra').css('visibility','visible');
 }else{
+    $('#totalcompra').css('visibility','hidden');
     $('#sendCarritoButt').css('visibility','hidden');
     $(`#contCompr .contComprs`).append(`
         <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
@@ -549,8 +607,10 @@ $('#sendCarritoButt').on('click',async function(){
             numeroPedidoClienteHistorico = response.numero;
             console.log("historico pedidos clientes numero post ajax : ",numeroPedidoClienteHistorico);
             borrarContenedor("Compr");
+            $('#sendCarritoButt').css('visibility','hidden');
+            $('#totalcompra').css('visibility','hidden');
             $(`#contCompr .contComprs`).append(`
-                <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
                 <p style="font-size: 3rem; margin: 0; color: white;">
                 No hay datos.
                 </p>
@@ -563,30 +623,39 @@ $('#sendCarritoButt').on('click',async function(){
             }
             });         
     }
-    if ($('#contCompr .contComprs').children(':visible').length == 0) {
-        $(`#contCompr .contComprs`).append(`
-            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
-            <p style="font-size: 3rem; margin: 0; color: white;">
-            No hay datos.
-            </p>
-            </div>
-            `);
-    }
     
 
 });
 
 // funcionalidad para boton de ver pedidos pendientes
 $('#verPendientesButt').on('click',async function(){ 
+    $('#totalcompra').css('visibility','hidden');
+    totalcomprasPedidos = 0;
     $('#contBothistoric').css('display','none');
     $('#sendCarritoButt').css('visibility','hidden');
     $('#aviso p').text('Pedidos pendientes');
     borrarContenedor("Compr");
-    cargarComprs(micCheck,"pendiente");
-    estadoBotonComprs=false;
-    if ($('#contCompr .contComprs').children(':visible').length == 0) {
+    await cargarComprs(micCheck,"pendiente");
+    if($('#contCompr .contComprs').children(':visible').length>0){
+        console.log("yes");
+        $('#contCompr .contComprs').find('div:visible').each(function() {
+            let valorUd = $(this).find('.tarjprecio');
+            let stock = $(this).find('.tarjstock');
+    
+            if (valorUd.length && stock.length) {
+                valorUd = parseInt(valorUd.val());
+                stock = parseInt(stock.val());
+    
+                totalcomprasPedidos += valorUd*stock;
+            }
+        });
+        $('#totalcompra p').text(`Total: ${totalcomprasPedidos}`);
+        $('#totalcompra').css('visibility','visible');
+    }else{
+        $('#totalcompra').css('visibility','hidden');
+        $('#sendCarritoButt').css('visibility','hidden');
         $(`#contCompr .contComprs`).append(`
-            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
             <p style="font-size: 3rem; margin: 0; color: white;">
             No hay datos.
             </p>
@@ -594,9 +663,10 @@ $('#verPendientesButt').on('click',async function(){
             `);
     }
     });
-
+    
 // funcionalidad para boton de ver historial de pedidos
 $('#verHistorialButt').on('click',async function(){ 
+    $('#totalcompra').css('visibility','hidden');
     $('#sendCarritoButt').css('visibility','hidden');
     $('#aviso p').text('Historial de pedidos');
     borrarContenedor("Compr");
@@ -611,7 +681,7 @@ $('#verHistorialButt').on('click',async function(){
         console.log(response);
         if(response.length == 0){
             $(`#contCompr .contComprs`).append(`
-                <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
                 <p style="font-size: 3rem; margin: 0; color: white;">
                 No hay datos.
                 </p>
@@ -653,7 +723,7 @@ $('#verHistorialButt').on('click',async function(){
         });
         if ($('#contCompr .contComprs').children(':visible').length == 0) {
             $(`#contCompr .contComprs`).append(`
-                <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+                <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
                 <p style="font-size: 3rem; margin: 0; color: white;">
                 No hay datos.
                 </p>
@@ -663,6 +733,9 @@ $('#verHistorialButt').on('click',async function(){
 });
 
 $('#completadoButt').on('click',async function(){
+    const container = document.querySelector('#contCompr .contComprs');
+    const nopeDivs = container.querySelectorAll('div.nope');
+    nopeDivs.forEach(div => div.remove());
     $('#contCompr .contComprs').children('.tarjetaP').hide();
     $('#contCompr .contComprs').children('.tarjetaP').each(function() {
         const hasMatchingInput = $(this).find('input').filter(function() {
@@ -675,7 +748,7 @@ $('#completadoButt').on('click',async function(){
     });
     if ($('#contCompr .contComprs').children(':visible').length == 0) {
         $(`#contCompr .contComprs`).append(`
-            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
             <p style="font-size: 3rem; margin: 0; color: white;">
             No hay datos.
             </p>
@@ -685,6 +758,9 @@ $('#completadoButt').on('click',async function(){
 });
 
 $('#rechazadoButt').on('click',async function(){
+    const container = document.querySelector('#contCompr .contComprs');
+    const nopeDivs = container.querySelectorAll('div.nope');
+    nopeDivs.forEach(div => div.remove());
     $('#contCompr .contComprs').children('.tarjetaP').hide();
     $('#contCompr .contComprs').children('.tarjetaP').each(function() {
         const hasMatchingInput = $(this).find('input').filter(function() {
@@ -697,7 +773,7 @@ $('#rechazadoButt').on('click',async function(){
     });
     if ($('#contCompr .contComprs').children(':visible').length == 0) {
         $(`#contCompr .contComprs`).append(`
-            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
             <p style="font-size: 3rem; margin: 0; color: white;">
             No hay datos.
             </p>
@@ -706,6 +782,9 @@ $('#rechazadoButt').on('click',async function(){
     }
 });
 $('#canceladoButt').on('click',async function(){
+    const container = document.querySelector('#contCompr .contComprs');
+    const nopeDivs = container.querySelectorAll('div.nope');
+    nopeDivs.forEach(div => div.remove());
     $('#contCompr .contComprs').children('.tarjetaP').hide();
     $('#contCompr .contComprs').children('.tarjetaP').each(function() {
         const hasMatchingInput = $(this).find('input').filter(function() {
@@ -718,7 +797,7 @@ $('#canceladoButt').on('click',async function(){
     });
     if ($('#contCompr .contComprs').children(':visible').length == 0) {
         $(`#contCompr .contComprs`).append(`
-            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
             <p style="font-size: 3rem; margin: 0; color: white;">
             No hay datos.
             </p>
@@ -727,6 +806,9 @@ $('#canceladoButt').on('click',async function(){
     }
 });
 $('#seleccionadoButt').on('click',async function(){
+    const container = document.querySelector('#contCompr .contComprs');
+    const nopeDivs = container.querySelectorAll('div.nope');
+    nopeDivs.forEach(div => div.remove());
     $('#contCompr .contComprs').children('.tarjetaP').hide();
     $('#contCompr .contComprs').children('.tarjetaP').each(function() {
         const hasMatchingInput = $(this).find('input').filter(function() {
@@ -739,7 +821,7 @@ $('#seleccionadoButt').on('click',async function(){
     });
     if ($('#contCompr .contComprs').children(':visible').length == 0) {
         $(`#contCompr .contComprs`).append(`
-            <div style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
+            <div class="nope" style="width: 100%; padding: 20px; background-color: rgba(248, 2, 2, 0.4); box-sizing: border-box; display: flex; justify-content: center; align-items: center;">
             <p style="font-size: 3rem; margin: 0; color: white;">
             No hay datos.
             </p>

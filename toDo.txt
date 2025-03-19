@@ -1,5 +1,5 @@
-cambiar como cargan las tarjetaP en admin
-quitar tambien toggles en admin
+cambiar como cargan las tarjetaP en admin(REVISARRRRRRRRRRRRRRRRRRRR RRRRRRRRRRRRRRRR RRRRRRRRRRRRRR)
+quitar tambien toggles en admin (revisar)
 
 cambiar css menus modificacion y maximizado y compra
 readme
@@ -9,5 +9,4 @@ comprobar que en client todos los eliminar rechazar etc devuelven stock
 check todo con user 2
 HACER CARRITO, al añadir al carrito resta el stock, carrito debe caducar y restaurar stock cuando caduca (si da la virada)
 
-
-revisar comments, estilar pa izquierda y esas movidas
+revisar comments front y back, estilar pa izquierda y esas movidas

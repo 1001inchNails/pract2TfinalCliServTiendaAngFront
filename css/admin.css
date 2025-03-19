@@ -56,6 +56,9 @@ margin: 0;
 color: white;
 z-index: 1;
 }
+#barraBusq{
+    display:none;
+}
 #aviso{
 visibility: hidden;
 margin: 0;
