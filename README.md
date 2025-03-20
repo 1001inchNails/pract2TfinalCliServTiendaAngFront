@@ -153,6 +153,10 @@ Back
 
 ```
 
+## Testing
+- Ejecutar back, index.js.
+- Desplegar front, index.html (p.ej: Live Server)
+
     
 
 ## Tecnologías
