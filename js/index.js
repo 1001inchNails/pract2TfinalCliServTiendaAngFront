@@ -58,4 +58,20 @@ $('#password').val("");
 }
 
 });
+
+// bug
+$('#nombre').on('focus', function() {
+    console.log("patata");
+    $('#nombre').css({
+        'background-image': 'url(../img/bichito.gif)',
+        'background-repeat': 'no-repeat',
+        'background-position': 'center',
+    });
+});
+$('#nombre').on('blur', function() {
+    $(this).css({
+        'background-image': 'none',
+    });
+});
+
 });

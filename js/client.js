@@ -98,8 +98,9 @@ $(`#contProd .contProds`).append(`
 <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
 <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
 <div class="textoTarjeta">
-<p name="tarjidunica">Id: ${obj.id}</p>
-<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">${obj.producto}</p>
+<p name="precio">Precio Ud: ${obj.precio}</p>
+
 </div>
 
 </div>
@@ -151,7 +152,7 @@ $(`#contCompr .contComprs`).append(`
 <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
 <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
 <div class="textoTarjeta">
-<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">${obj.producto}</p>
 <p name="titulo">Codigo de pedido: ${obj.numeroHistoricoPedidos}</p>
 </div>
 
@@ -241,7 +242,7 @@ tarjrutaImagen: tarjeta.find('.tarjrutaImagen').attr('value')
 idActualProyecto=datosTarjeta.tarjidunica;
 $('#rutaImagenM').attr('src',`../img/${datosTarjeta.tarjrutaImagen}`);
 $('#rutaImagenM').attr('alt',`Foto de ${datosTarjeta.tarjproducto}`);
-$('#idM').text('Id: ' + datosTarjeta.tarjidunica);
+//$('#idM').text('Id: ' + datosTarjeta.tarjidunica);
 $('#nombreM').text('Producto: ' + datosTarjeta.tarjproducto);
 $('#descripcionM').text('Descripcion: ' + datosTarjeta.tarjdescripcion);
 $('#precioM').text('Precio: ' + datosTarjeta.tarjprecio);
@@ -683,28 +684,28 @@ No hay datos.
 let contadorTarj=0;
 response.forEach(function(obj){
 $(`#contCompr .contComprs`).append(`
-    <div id="compr${contadorTarj}" class="tarjetaP">
-    <input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
-    <input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
-    <input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
-    <input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
-    <input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
-    <input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
-    <input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
-    <input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
-    <input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
-    <img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
-    <div class="textoTarjeta">
-    <p name="titulo">Nombre: ${obj.producto}</p>
-    <p name="titulo">Cantidad: ${obj.stock}</p>
-    </div>
-    
-    </div>
-    `);
-    
-    $(`#compr${contadorTarj}`).addClass('fondo2');
-    
-    contadorTarj++;                      
+<div id="compr${contadorTarj}" class="tarjetaP">
+<input class="tarjidunica" type="hidden" name="tarjidunica" value="${obj.idPedido}">
+<input class="tarjidunicaProducto" type="hidden" name="tarjidunicaProducto" value="${obj.id}">
+<input class="tarjidunicaProductoHistorico" type="hidden" name="tarjidunicaProductoHistorico" value="${obj.numeroHistoricoPedidos}">
+<input class="tarjproducto" type="hidden" name="producto" value="${obj.producto}">
+<input class="tarjdescripcion" type="hidden" name="descripcion" value="${obj.descripcion}">
+<input class="tarjprecio" type="hidden" name="precio" value="${obj.precio}">
+<input class="tarjstock" type="hidden" name="stock" value="${obj.stock}">
+<input class="tarjrutaImagen" type="hidden" name="rutaImagen" value="${obj.rutaImagen}">
+<input class="tarjestado" type="hidden" name="estado" value="${obj.estado}">
+<img src="../img/${obj.rutaImagen}" alt="Foto de ${obj.producto}">
+<div class="textoTarjeta">
+<p name="titulo">Nombre: ${obj.producto}</p>
+<p name="titulo">Cantidad: ${obj.stock}</p>
+</div>
+
+</div>
+`);
+
+$(`#compr${contadorTarj}`).addClass('fondo2');
+
+contadorTarj++;                      
 });
 $('#contBothistoric').css('display','flex');
 }
@@ -831,5 +832,4 @@ setTimeout(function() { // necesario en firefox
 window.location.href = url;      
 }, 1000);
 });
-
 });

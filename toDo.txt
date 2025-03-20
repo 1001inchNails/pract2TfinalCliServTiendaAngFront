@@ -1,1 +1,0 @@
-HACER CARRITO, al añadir al carrito resta el stock, carrito debe caducar y restaurar stock cuando caduca (si da la virada)

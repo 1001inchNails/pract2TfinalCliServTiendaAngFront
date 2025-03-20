@@ -63,21 +63,20 @@
         <div class="modal-content">
             <div class="modal-body">
                 <div class="tarjeta-detalle">
-                    
+                    <div class="imagenMaximTarj">
+                        <img id="rutaImagenM" src="" alt="">                        
+                    </div>
                     <div class="textoMaximTarj">
                         <p id="idM"></p>
                         <p id="nombreM"></p>                    
                         <p id="descripcionM"></p>
                         <p id="precioM"></p>
                         <p id="stockM"></p>
-                        
-                    </div>
-                    <div class="imagenMaximTarj">
-                        <img id="rutaImagenM" src="" alt="">
                         <div id="botoneraMax">
                             <button id="comprarTarj" type="button" class="btn btn-danger" title="Añadir a carrito"><i class="fa-solid fa-cart-plus"></i></button>
                         </div>
                     </div>
+                    
                     
                 </div>
             </div>
@@ -85,43 +84,41 @@
     </div>
 
     <div id="modificacionTarjeta">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div id="contModifFull" class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modificacionTarjetaLabel">Añadir a carrito</h5>
                 </div>
                 <div class="modal-body">
-
                     <form id="formModif">
-
-                        <div class="mb-3">
-                            <img id="rutaImagenMF" src="" alt="">
-                        </div> 
-                        <div class="mb-3">
-                            <input type="hidden" class="form-control" id="idMF" name="idMF" required>
-                        </div>                           
-                        <div class="mb-3">
-                            <label for="nombreMF" class="form-label">Producto: </label>
-                            <p class="form-control" id="nombreMF" name="nombreMF"></p>
+                        <div class="mb-4 text-center">
+                            <img id="rutaImagenMF" src="" alt="" class="img-fluid rounded" style="max-height: 200px;">
                         </div>
                         <div class="mb-3">
-                            <label for="descripcionMF" class="form-label">Descripcion: </label>
-                            <p class="form-control" id="descripcionMF" name="descripcionMF"></p>
+                            <p class="form-control-plaintext fs-5" id="idMF"></p>
                         </div>
                         <div class="mb-3">
-                            <label for="precioMF" class="form-label">Precio: </label>
-                            <p class="form-control" id="precioMF" name="precioMF"></p>
+                            <p class="form-control-plaintext fs-5" id="nombreMF"></p>
                         </div>
                         <div class="mb-3">
-                            <label for="stockMF" class="form-label">Stock: </label>
-                            <input type="number" class="form-control" id="stockMF" name="stockMF" max="" required>
+                            <p class="form-control-plaintext fs-6 text-muted" id="descripcionMF"></p>
                         </div>
-
-                        <div id="buttmodifS">
-                            <button id="cancelarModif" type="button" class="btn btn-warning w-50" title="Cancelar"><i class="fa-solid fa-xmark"></i></button>
-                            <button type="submit" class="btn btn-info w-50" title="Añadir"><i class="fa-solid fa-cart-arrow-down"></i></button>
+                        <div class="mb-3">
+                            <label for="precioMF" class="form-label fw-bold">Precio:</label>
+                            <p class="form-control-plaintext fs-5" id="precioMF"></p>
                         </div>
-                        
+                        <div class="mb-4">
+                            <label for="stockMF" class="form-label fw-bold">Cantidad:</label>
+                            <input type="number" class="form-control form-control-lg" id="stockMF" name="stockMF" min="1" max="" required>
+                        </div>
+                        <div id="buttmodifS" class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button id="cancelarModif" type="button" class="btn btn-lg bg-warning" title="Cancelar">
+                                <i class="fa-solid fa-xmark me-2"></i>
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-lg" title="Añadir">
+                                <i class="fa-solid fa-cart-arrow-down me-2"></i>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -135,7 +132,9 @@
         <div class="modal-content">
             <div class="modal-body">
                 <div class="tarjeta-detalle">
-
+                    <div class="imagenMaximTarj">
+                        <img id="rutaImagenPP" src="" alt="">                        
+                    </div>
                     <div class="textoMaximTarj">
                         <p id="idPedidoHistoricoP"></p>
                         <p id="idPedidoP"></p>
@@ -147,14 +146,10 @@
                         <p id="rutaImagenP"></p>
                         <p id="estadoP"></p>                    
                         <p id="totalP"></p> 
-                    </div>
-                    <div class="imagenMaximTarj">
-                        <img id="rutaImagenPP" src="" alt="">
                         <div id="botoneraMaxP">
                             <button id="modifTarjEliminar" type="button" class="btn btn-info" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
-                    </div>
-                    
+                    </div>                  
                 </div>
             </div>
         </div>

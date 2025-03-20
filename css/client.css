@@ -193,10 +193,10 @@ border-radius: 5px;
 color: white;
 }
 .fondo1{
-background-color: #49a05f;
+background-color: #657e9c;
 }
 .fondo2{
-background-color: rgb(110, 141, 177);
+background-color: rgb(47, 116, 201);
 }
 .fondoMenus{
 background-color: rgb(66, 71, 77);
@@ -343,10 +343,10 @@ flex-direction: row;
 gap: 10px;
 }
 .textoMaximTarj{
-width: 50%;
+width: 100%;
 }
 .imagenMaximTarj{
-width: 50%;
+width: 100%;
 display: flex;
 flex-direction: column;
 justify-content: space-between;
@@ -408,6 +408,7 @@ flex-direction: column;
 justify-content: center;
 align-items: center;
 padding-top: 80px;
+overflow: auto;
 }
 html body.modal-open div#tarjetaModal.modal.fade.show div#modificacionTarjeta div.modal-dialog div#contModifFull.modal-content div.modal-header{
 display: flex;
@@ -518,6 +519,8 @@ flex-direction: column;
 }
 .btn {
 font-size: 16px; 
+border-radius: 5px;
+transition: background-color 0.3s ease;
 }
 @media (min-width: 600px) and (max-width: 992px) {
 .btn {
@@ -590,4 +593,210 @@ flex-direction: column;
 height: 60px;
 width: 60px;
 }
+}
+.tarjeta {
+display: flex;
+flex-direction: column;
+background-color: rgb(255, 255, 255, 0.2);
+border-radius: 10px;
+padding: 1rem;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+transition: transform 0.2s, box-shadow 0.2s;
+cursor: pointer;
+}
+.tarjeta:hover {
+transform: translateY(-5px);
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.tarjeta img {
+width: 100%;
+height: 150px;
+object-fit: cover;
+border-radius: 10px;
+}
+.tarjeta .textoTarjeta {
+padding: 1rem 0;
+text-align: center;
+}
+.tarjeta .textoTarjeta p {
+margin: 0.5rem 0;
+font-size: 1rem;
+color: #000000;
+}
+.tarjeta .textoTarjeta p:first-child {
+font-size: 1.5rem;
+color: #000;
+}
+.tarjetaP {
+display: flex;
+flex-direction: column;
+background-color: rgb(47, 116, 201, 0.2);
+border-radius: 10px;
+padding: 1rem;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+transition: transform 0.2s, box-shadow 0.2s;
+cursor: pointer;
+position: relative;
+overflow: hidden;
+}
+.tarjetaP:hover {
+transform: translateY(-5px);
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.tarjetaP img {
+width: 100%;
+height: 150px;
+object-fit: cover;
+border-radius: 10px;
+margin-bottom: 1rem;
+}
+.tarjetaP .textoTarjeta {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+text-align: left;
+padding: 0 1rem;
+}
+.tarjetaP .textoTarjeta p {
+margin: 0;
+font-size: 0.9rem;
+color: #333;
+line-height: 1.4;
+}
+.tarjetaP .textoTarjeta p:first-child {
+font-size: 1.1rem;
+color: #000;
+}
+.tarjetaP .textoTarjeta p:nth-child(2) {
+font-size: 0.8rem;
+color: #b6b2b2;
+}
+.tarjetaP #botoneraMaxP {
+display: flex;
+justify-content: flex-end;
+margin-top: 1rem;
+}
+.tarjetaP #botoneraMaxP button {
+background-color: #007bff;
+color: white;
+border: none;
+padding: 0.5rem 1rem;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+.tarjetaP #botoneraMaxP button:hover {
+background-color: #0056b3;
+}
+@media (max-width: 600px) {
+.tarjetaP .textoTarjeta p {
+font-size: 0.8rem;
+}
+
+.tarjetaP .textoTarjeta p:first-child {
+font-size: 1rem;
+}
+
+.tarjetaP .textoTarjeta p:nth-child(2) {
+font-size: 0.7rem;
+}
+}
+#tarjetaModal .modal-content {
+border-radius: 12px;
+border: none;
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+#tarjetaModal .modal-header {
+background-color: #f8f9fa;
+border-bottom: 1px solid #e9ecef;
+border-radius: 12px 12px 0 0;
+padding: 1rem 1.5rem;
+}
+#tarjetaModal .modal-title {
+font-size: 1.5rem;
+font-weight: bold;
+color: #333;
+}
+#tarjetaModal .modal-body {
+padding: 1.5rem;
+}
+.tarjeta-detalle {
+display: flex;
+flex-direction: column;
+gap: 1.5rem;
+}
+.imagenMaximTarj img {
+max-height: 150px;
+max-width: 150px;
+border-radius: 8px;
+align-self: center;
+}
+.textoMaximTarj {
+display: flex;
+flex-direction: column;
+gap: 1rem;
+}
+.textoMaximTarj h4 {
+font-size: 1.75rem;
+font-weight: bold;
+color: #333;
+margin: 0;
+}
+.textoMaximTarj p {
+font-size: 1rem;
+color: #666;
+margin: 0;
+}
+.textoMaximTarj .badge {
+font-size: 1.25rem;
+padding: 0.5rem 1rem;
+border-radius: 8px;
+}
+.textoMaximTarj .btn {
+font-size: 1.1rem;
+padding: 0.75rem;
+border-radius: 8px;
+transition: background-color 0.3s ease;
+}
+.textoMaximTarj .btn-danger {
+background-color: #dc3545;
+border: none;
+}
+.textoMaximTarj .btn-danger:hover {
+background-color: #c82333;
+}
+@media (max-width: 768px) {
+.tarjeta-detalle {
+flex-direction: column;
+}
+
+.imagenMaximTarj img {
+max-height: 200px;
+}
+
+.textoMaximTarj h4 {
+font-size: 1.5rem;
+}
+
+.textoMaximTarj .badge {
+font-size: 1rem;
+}
+
+.textoMaximTarj .btn {
+font-size: 1rem;
+}
+}
+#cancelarModif{
+min-width: 60px;
+}
+#buttmodifS button.btn.btn-primary.btn-lg{
+min-width: 60px;
+}
+#stockMF{
+width: 20%;
+min-width: 100px;
+justify-self: center;
+}
+#buttmodifS{
+justify-self: center;
 }
