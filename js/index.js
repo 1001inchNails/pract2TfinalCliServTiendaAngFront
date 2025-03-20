@@ -9,7 +9,7 @@ let password=$('#password').val();
 let responseA;
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/checkCreds',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/checkCreds',
 contentType: 'application/json',
 data: JSON.stringify({
 "name": nombre,
@@ -23,7 +23,7 @@ responseA = response.resultado;
 /* Seteo de token para autenticacion */
 if(responseA && nombre == 'admin'){
 
-const response = await fetch("http://localhost:5000/login", {
+const response = await fetch("https://pract2-tfinal-tienda-back.vercel.app/login", {
 method: "POST",
 headers: { "Content-Type": "application/json" },
 body: JSON.stringify({ nombre, autoriz })
@@ -38,7 +38,7 @@ window.location.assign("admin.html");
 console.log("Login failed: " + (data.message || "Unknown error"));
 }   
 }else if(responseA && nombre !== 'admin'){ 
-const response = await fetch("http://localhost:5000/login", {
+const response = await fetch("https://pract2-tfinal-tienda-back.vercel.app/login", {
 method: "POST",
 headers: { "Content-Type": "application/json" },
 body: JSON.stringify({ nombre, autoriz })

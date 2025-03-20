@@ -56,7 +56,7 @@ let rutaImagen = $('#rutaImagenP').val();
 e.preventDefault();
 $.ajax({
 type: 'POST',
-url: 'http://localhost:5000/api/nuevoProducto',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/nuevoProducto',
 contentType: 'application/json',
 data: JSON.stringify({
 "producto": producto,
@@ -93,7 +93,7 @@ $('#result').html('<p>An error ocurred: ' + error + '</p>');
 async function cargarProds(endpoint,prefijoContenedor) {
 await $.ajax({    
 type: 'GET',
-url: `http://localhost:5000/api/${endpoint}`,
+url: `https://pract2-tfinal-tienda-back.vercel.app/api/${endpoint}`,
 data: '',
 success: function(response) {
 console.log(response);
@@ -177,7 +177,7 @@ $('#result').html('<p>Error: ' + error + '</p>');
 async function cargarComprsAll() {
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/comprsall',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/comprsall',
 contentType: 'application/json',
 data:'',
 success: function(response) {
@@ -292,7 +292,7 @@ let rutaImagen=$('#rutaImagenMF').val();
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/modifProd',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/modifProd',
 contentType: 'application/json',
 data: JSON.stringify({
 "id": idunica,
@@ -333,7 +333,7 @@ cargarProds('prods','Prod');
 $('#deleteTarj').on('click', async function(){
 await $.ajax({      // para que al borrar un producto se borren todos los pedidos de ese producto que esten pendientes 
 type: 'POST',
-url: 'http://localhost:5000/api/removePedidosDeProductosEliminados',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/removePedidosDeProductosEliminados',
 contentType: 'application/json',
 data: JSON.stringify({
 "idProducto": pedidoIdParaBusqueda2
@@ -347,7 +347,7 @@ $('#result').html('<p>An error ocurred: ' + error + '</p>');
 });
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/moverDocumento',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/moverDocumento',
 contentType: 'application/json',
 data: JSON.stringify({
 "idkey": "id",
@@ -503,7 +503,7 @@ cargarProds('hist','Papel');
 $('#modifTarjAcepP').on('click',async function(){
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/cambiarEstado',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/cambiarEstado',
 contentType: 'application/json',
 data: JSON.stringify({
 "estado":"completado",
@@ -522,7 +522,7 @@ $('#result').html('<p>An error ocurred: ' + error + '</p>');
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/copiarDocumento',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/copiarDocumento',
 contentType: 'application/json',
 data: JSON.stringify({
 "username":userIdNombreParaBusqueda,
@@ -553,7 +553,7 @@ let idProducto = idPedidoPPP;
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/devolverStock',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/devolverStock',
 contentType: 'application/json',
 data: JSON.stringify({
 "idProducto":idProducto,
@@ -569,7 +569,7 @@ $('#result').html('<p>An error ocurred: ' + error + '</p>');
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/cambiarEstado',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/cambiarEstado',
 contentType: 'application/json',
 data: JSON.stringify({
 "estado":"rechazado",
@@ -588,7 +588,7 @@ $('#result').html('<p>An error ocurred: ' + error + '</p>');
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/copiarDocumento',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/copiarDocumento',
 contentType: 'application/json',
 data: JSON.stringify({
 "username":userIdNombreParaBusqueda,

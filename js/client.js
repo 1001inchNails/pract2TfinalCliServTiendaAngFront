@@ -22,7 +22,7 @@ $('#nombreUser').text(micCheck);
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/getnumpedidoscli',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/getnumpedidoscli',
 contentType: 'application/json',
 data: JSON.stringify({
 "user":micCheck
@@ -72,7 +72,7 @@ $(`#cont${tipo} .cont${tipo}s`).empty();
 async function cargarProds() {
 await $.ajax({    
 type: 'GET',
-url: 'http://localhost:5000/api/prods',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/prods',
 data: '',
 success: function(response) {
 console.log(response);
@@ -126,7 +126,7 @@ $('#result').html('<p>Error: ' + error + '</p>');
 async function cargarComprs(user,tipoACargar) {
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/comprs',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/comprs',
 contentType: 'application/json',
 data: JSON.stringify({
 "user": user
@@ -291,7 +291,7 @@ let rutaImagen=$('#rutaImagenMF').attr('src');
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/enviarPedido',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/enviarPedido',
 contentType: 'application/json',
 data: JSON.stringify({
 "numeroHistoricoPedidos":numeroPedidoClienteHistorico,
@@ -316,7 +316,7 @@ let nuevoStock = maxStock - stock
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/updateStock',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/updateStock',
 contentType: 'application/json',
 data: JSON.stringify({
 "id": idunica,
@@ -398,7 +398,7 @@ copiarObjeto = true;
 console.log("cancelar/eliminar: ",idProducto,stockPendiente);
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/devolverStock',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/devolverStock',
 contentType: 'application/json',
 data: JSON.stringify({
 "idProducto":idProducto,
@@ -414,7 +414,7 @@ $('#result').html('<p>An error ocurred: ' + error + '</p>');
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/cambiarEstado',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/cambiarEstado',
 contentType: 'application/json',
 data: JSON.stringify({
 "estado":"cancelado",
@@ -436,7 +436,7 @@ copiarObjeto = false;
 }
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/cancelareliminar',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/cancelareliminar',
 contentType: 'application/json',
 data: JSON.stringify({
 "username":micCheck,
@@ -571,7 +571,7 @@ $('#contBothistoric').css('display','none');
 if($('#contCompr .contComprs').children(':visible').length>0){
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/cambiarEstadoAll',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/cambiarEstadoAll',
 contentType: 'application/json',
 data: JSON.stringify({
 "estado":"pendiente",
@@ -591,7 +591,7 @@ $('#result').html('<p>An error ocurred: ' + error + '</p>');
 
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/setUndGetnumpedidoscli',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/setUndGetnumpedidoscli',
 contentType: 'application/json',
 data: JSON.stringify({
 "user":micCheck
@@ -665,7 +665,7 @@ $('#aviso p').text('Historial de pedidos');
 borrarContenedor("Compr");
 await $.ajax({    
 type: 'POST',
-url: 'http://localhost:5000/api/histconuser',
+url: 'https://pract2-tfinal-tienda-back.vercel.app/api/histconuser',
 contentType: 'application/json',
 data: JSON.stringify({
 "user":micCheck
